@@ -5,7 +5,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Upload, X, FileText, Send, CheckCircle } from 'lucide-react';
-import axios from 'axios';
 
 interface JobApplicationFormProps {
   jobTitle?: string;
@@ -76,9 +75,11 @@ export function JobApplicationForm({ jobTitle, onClose }: JobApplicationFormProp
         data.append(key, value);
       });
 
-      const res = await axios.post('https://bytesflareinfotech-backend.onrender.com/api/careers/apply', data, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+      const res = await fetch('https://bytesflareinfotech-backend.onrender.com/api/careers/apply', {
+        method: 'POST',
+        body: data,
       });
+      
       // Show success animation for any successful response (200-299)
       if (res.status >= 200 && res.status < 300) {
         setShowSuccessAnimation(true);
