@@ -121,10 +121,6 @@ export function Blog() {
                       <User className="w-5 h-5 text-slate-400 mr-2" />
                       <span className="text-slate-600 font-medium">{featuredPost.author}</span>
                     </div>
-                    <Button className="bg-teal-500 hover:bg-teal-600 text-white group">
-                      Read More
-                      <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    </Button>
                   </div>
                 </CardContent>
               </div>
@@ -170,25 +166,12 @@ export function Blog() {
                     <User className="w-4 h-4 text-slate-400 mr-1" />
                     <span className="text-slate-600 text-sm">{post.author}</span>
                   </div>
-                  <Button variant="ghost" size="sm" className="text-teal-500 hover:text-teal-600 p-0">
-                    Read More
-                    <ArrowRight className="ml-1 w-3 h-3" />
-                  </Button>
-                </div>
+                  </div>
               </CardContent>
             </Card>
           ))}
         </div>
 
-        <div className="text-center">
-          <Button 
-            size="lg"
-            className="bg-teal-500 hover:bg-teal-600 text-white px-8 py-4 rounded-lg transition-all duration-300 hover:shadow-lg hover:scale-105 group"
-          >
-            View All Articles
-            <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </Button>
-        </div>
       </div>
     </section>
   );

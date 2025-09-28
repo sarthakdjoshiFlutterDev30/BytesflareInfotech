@@ -1,9 +1,8 @@
-'use client';
-
-import { MapPin, Clock, DollarSign, Users, ArrowRight, Heart, Zap, Trophy, IndianRupee } from 'lucide-react';
+import { useState } from 'react';
+import { MapPin, Clock, ArrowRight, Heart, Zap, Users, Trophy, IndianRupee } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-
+import { JobApplicationForm } from './form';
 
 const jobOpenings = [
   {
@@ -98,7 +97,6 @@ const jobOpenings = [
   }
 ];
 
-
 const benefits = [
   {
     icon: Heart,
@@ -123,6 +121,8 @@ const benefits = [
 ];
 
 export function Careers() {
+  const [selectedJob, setSelectedJob] = useState<string | null>(null);
+
   return (
     <section id="careers" className="py-24 bg-gradient-to-br from-slate-50 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -205,7 +205,10 @@ export function Careers() {
                     </ul>
                   </div>
 
-                  <Button className="w-full bg-teal-500 hover:bg-teal-600 text-white group" onClick={() => window.open("mailto:byteflare.hr@gmail.com")}>
+                  <Button 
+                    className="w-full bg-teal-500 hover:bg-teal-600 text-white group"
+                    onClick={() => setSelectedJob(job.title)}
+                  >
                     Apply Now
                     <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Button>
@@ -233,6 +236,14 @@ export function Careers() {
           </div>
         </div>
       </div>
+
+      {/* Job Application Form Modal */}
+      {selectedJob && (
+        <JobApplicationForm 
+          jobTitle={selectedJob} 
+          onClose={() => setSelectedJob(null)} 
+        />
+      )}
     </section>
   );
 }

@@ -4,10 +4,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Mail, Phone, Clock, Send } from 'lucide-react';
-import emailjs from '@emailjs/browser';
 
-export function 
-Contact() {
+export function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
@@ -30,19 +28,33 @@ Contact() {
     event.preventDefault();
     setIsSubmitting(true);
     setStatusMessage("");
-    try {
-      const serviceID = "service_8ofbsvm";
-      const userID = "hPLAcb22Xxf7Hd1Od";
-      // send to admin
-      await emailjs.send(serviceID, "template_7y6fyxb", formData, userID);
-      // auto reply to client
-      await emailjs.send(serviceID, "template_1tcnz0c", formData, userID);
 
-      setSubmitted(true);
-      setStatusMessage("✅ Message sent successfully!");
-      setFormData({ name: "", email: "", phone: "", projectType: "", budget: "", message: "" });
+    try {
+      const response = await fetch("https://bytesflareinfotech-backend.onrender.com/api/contacts", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setSubmitted(true);
+        setStatusMessage("✅ Message sent successfully!");
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          projectType: "",
+          budget: "",
+          message: "",
+        });
+      } else {
+        const errorData = await response.json();
+        setStatusMessage(`❌ Failed: ${errorData.message || "Please try again."}`);
+        console.log(errorData)
+      }
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.error(err);
       setStatusMessage("❌ Failed to send. Please try again.");
     } finally {
@@ -59,12 +71,12 @@ Contact() {
             Get In <span className="text-slate-900 bg-gradient-to-r from-blue-700 to-blue-900 bg-clip-text text-transparent">Touch</span>
           </h2>
           <p className="mt-6 max-w-3xl mx-auto text-lg text-slate-600">
-            Ready to transform your business? Let's discuss your project and create something
-            amazing together.
+            Ready to transform your business? Let's discuss your project and create something amazing together.
           </p>
         </div>
+
         <div className="grid md:grid-cols-2 gap-12">
-          {/* Left: Info cards + benefits */}
+          {/* Left: Info cards */}
           <div>
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-8">Let's Start a Conversation</h2>
 
@@ -190,5 +202,3 @@ Contact() {
     </section>
   );
 }
-
-

@@ -1,6 +1,6 @@
 'use client';
 
-import { Mail, Phone, MapPin, Zap, Github, Twitter, Linkedin } from 'lucide-react';
+import { Mail, Phone, MapPin, Zap, Github, Twitter, Linkedin, Facebook, Instagram } from 'lucide-react';
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -24,14 +24,17 @@ export function Footer() {
               Let's transform your vision into cutting-edge reality.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center hover:bg-teal-500 transition-colors">
+              <a href="https://x.com/BytesF99635" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center hover:bg-teal-500 transition-colors">
                 <Twitter className="w-5 h-5" />
               </a>
-              <a href="#" className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center hover:bg-teal-500 transition-colors">
+              <a href="https://www.linkedin.com/company/bytesflareinfotech/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center hover:bg-teal-500 transition-colors">
                 <Linkedin className="w-5 h-5" />
               </a>
-              <a href="#" className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center hover:bg-teal-500 transition-colors">
-                <Github className="w-5 h-5" />
+              <a href="https://www.instagram.com/bytesflareinfotech/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center hover:bg-teal-500 transition-colors">
+                <Instagram className="w-5 h-5" />
+              </a>
+            <a href="https://facebook.com/BytesFlareInfotech" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center hover:bg-teal-500 transition-colors">
+                <Facebook className="w-5 h-5" />
               </a>
             </div>
           </div>
@@ -40,11 +43,11 @@ export function Footer() {
           <div>
             <h3 className="font-bold text-lg mb-6">Services</h3>
             <ul className="space-y-3">
-              <li><a href="#" className="text-slate-300 hover:text-teal-400 transition-colors">Web Development</a></li>
-              <li><a href="#" className="text-slate-300 hover:text-teal-400 transition-colors">Mobile Apps</a></li>
-              <li><a href="#" className="text-slate-300 hover:text-teal-400 transition-colors">ERP Solutions</a></li>
-              <li><a href="#" className="text-slate-300 hover:text-teal-400 transition-colors">API Integration</a></li>
-              <li><a href="#" className="text-slate-300 hover:text-teal-400 transition-colors">Cloud Solutions</a></li>
+              <li><span className="text-slate-300 hover:text-yellow-400 transition-colors cursor-pointer">Web Development</span></li>
+              <li><span className="text-slate-300 hover:text-yellow-400 transition-colors cursor-pointer">Mobile Apps</span></li>
+              <li><span className="text-slate-300 hover:text-yellow-400 transition-colors cursor-pointer">ERP Solutions</span></li>
+              <li><span className="text-slate-300 hover:text-yellow-400 transition-colors cursor-pointer">API Integration</span></li>
+              <li><span className="text-slate-300 hover:text-yellow-400 transition-colors cursor-pointer">Cloud Solutions</span></li>
             </ul>
           </div>
 
@@ -53,8 +56,8 @@ export function Footer() {
             <h3 className="font-bold text-lg mb-6">Get In Touch</h3>
             <ul className="space-y-4">
               <li className="flex items-center space-x-3">
-                <Mail className="w-5 h-5 text-teal-400" />
-                <span className="text-slate-300"> </span>
+                <Mail className="w-5 h-5 text-teal-00" />
+                <span className="text-slate-300">bytesflareinfotechsales@gmail.com</span>
               </li>
              
               <li className="flex items-center space-x-3">
@@ -71,9 +74,9 @@ export function Footer() {
               © {currentYear} Bytesflare Infotech. All rights reserved.
             </p>
             <div className="flex space-x-6">
-              <a href="#" className="text-slate-400 hover:text-teal-400 transition-colors">Privacy Policy</a>
-              <a href="#" className="text-slate-400 hover:text-teal-400 transition-colors">Terms of Service</a>
-              <a href="#" className="text-slate-400 hover:text-teal-400 transition-colors">Cookie Policy</a>
+              <a href="/privacy-policy" className="text-slate-400 hover:text-teal-400 transition-colors">Privacy Policy</a>
+              <a href="/terms-of-service" className="text-slate-400 hover:text-teal-400 transition-colors">Terms of Service</a>
+              <a href="/cookie-policy" className="text-slate-400 hover:text-teal-400 transition-colors">Cookie Policy</a>
             </div>
           </div>
         </div>

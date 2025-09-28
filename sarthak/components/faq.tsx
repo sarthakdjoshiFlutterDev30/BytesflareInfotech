@@ -101,19 +101,7 @@ export function FAQ() {
             </div>
           ))}
         </div>
-
-        <div className="mt-16 text-center">
-          <div className="bg-gradient-to-r from-teal-500 to-blue-500 p-8 rounded-2xl text-white">
-            <h3 className="text-2xl font-bold mb-4">Still Have Questions?</h3>
-            <p className="text-lg opacity-90 mb-6">
-              Our team is here to help. Get in touch for a free consultation and personalized answers to your questions.
-            </p>
-            <button className="bg-white text-teal-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-              Contact Us Today
-            </button>
-          </div>
-        </div>
-      </div>
+         </div>
     </section>
   );
 }

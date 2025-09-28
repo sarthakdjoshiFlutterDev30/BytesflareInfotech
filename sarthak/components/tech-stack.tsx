@@ -27,7 +27,7 @@ const techCategories = [
   {
     icon: Smartphone,
     title: 'Mobile',
-    technologies: ['React Native', 'Flutter', 'iOS (Swift)', 'Android (Kotlin)', 'Xamarin', 'Ionic']
+    technologies: ['React Native', 'Flutter']
   },
   {
     icon: Globe,

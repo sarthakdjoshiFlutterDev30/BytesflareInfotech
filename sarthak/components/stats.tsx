@@ -6,8 +6,8 @@ import { Users, Trophy, Clock, Zap } from 'lucide-react';
 const stats = [
   { icon: Trophy, label: 'Projects Delivered', value: 250, suffix: '+' },
   { icon: Users, label: 'Happy Clients', value: 150, suffix: '+' },
-  { icon: Clock, label: 'Years of Experience', value: 8, suffix: '+' },
-  { icon: Zap, label: 'Technologies Mastered', value: 30, suffix: '+' },
+  { icon: Trophy, label: '5★ Rated Projects', value: 200, suffix: '+' },
+    { icon: Zap, label: 'Technologies Mastered', value: 30, suffix: '+' },
 ];
 
 export function Stats() {

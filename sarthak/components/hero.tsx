@@ -30,8 +30,12 @@ export function Hero() {
             <Button 
               size="lg"
               className="bg-teal-500 hover:bg-teal-600 text-white px-8 py-4 text-lg rounded-lg transition-all duration-300 hover:shadow-2xl hover:scale-105 group"
+              onClick={() => window.open(
+                "https://calendar.google.com/calendar/u/0/r/eventedit?text=Free+Consultation&details=Schedule+your+free+consultation+with+BytesFlare+Infotech.&add=bytesflareinfotechsales@gmail.com&sf=true&output=xml",
+                "_blank"
+              )}
             >
-              Get a Free Consultation
+              Get a Free Consultation On Google Meet
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
             
