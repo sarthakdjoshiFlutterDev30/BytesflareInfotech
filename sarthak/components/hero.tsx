@@ -35,7 +35,7 @@ export function Hero() {
                 "_blank"
               )}
             >
-              Get a Free Consultation On Google Meet
+              Get a Free Consultation
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
             
