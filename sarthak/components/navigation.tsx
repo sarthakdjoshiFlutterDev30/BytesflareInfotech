@@ -24,6 +24,7 @@ export function Navigation() {
     { href: '#portfolio', label: 'Portfolio' },
     { href: '#blog', label: 'Blog' },
     { href: '#support', label: 'Support' },
+    
     { href: '#careers', label: 'Careers' },
     { href: '#contact', label: 'Contact' },
   ];
