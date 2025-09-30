@@ -14,8 +14,7 @@ import { FAQ } from '@/components/faq';
 import { Contact } from '@/components/contact';
 import { Careers } from '@/components/careers';
 import { Footer } from '@/components/footer';
-import { Form } from 'react-hook-form';
-import { JobApplicationForm } from '@/components/form';
+import TechnicalSupportPage  from '@/components/TechnicalSupportPage';
 
 
 export default function Home() {
@@ -35,6 +34,9 @@ export default function Home() {
         <FAQ />
         <Careers />
         <Contact />
+        <section id="support">
+          <TechnicalSupportPage />
+        </section>
       </main>
       <Footer />
     </div>
