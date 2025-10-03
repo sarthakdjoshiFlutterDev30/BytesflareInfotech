@@ -40,7 +40,7 @@ const blogPosts = [
     author: 'David Park',
     date: '2024-11-28',
     readTime: '6 min read',
-    category: 'API Integration',
+    category: 'API Integration', 
     image: 'https://images.pexels.com/photos/270348/pexels-photo-270348.jpeg?auto=compress&cs=tinysrgb&w=600&h=400'
   },
   {
