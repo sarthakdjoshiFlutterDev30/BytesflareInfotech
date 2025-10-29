@@ -3,30 +3,32 @@ import { MetadataRoute } from 'next';
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://bytesflareinfotech.vercel.app';
   
+  const now = new Date();
+  
   return [
     {
       url: baseUrl,
-      lastModified: new Date('2025-10-29T11:40:49+00:00'),
+      lastModified: now,
       changeFrequency: 'weekly',
-      priority: 1.00,
+      priority: 1,
     },
     {
       url: `${baseUrl}/privacy-policy`,
-      lastModified: new Date('2025-10-29T11:40:49+00:00'),
+      lastModified: now,
       changeFrequency: 'monthly',
-      priority: 0.80,
+      priority: 0.8,
     },
     {
       url: `${baseUrl}/terms-of-service`,
-      lastModified: new Date('2025-10-29T11:40:50+00:00'),
+      lastModified: now,
       changeFrequency: 'monthly',
-      priority: 0.80,
+      priority: 0.8,
     },
     {
       url: `${baseUrl}/cookie-policy`,
-      lastModified: new Date('2025-10-29T11:40:50+00:00'),
+      lastModified: now,
       changeFrequency: 'monthly',
-      priority: 0.80,
+      priority: 0.8,
     },
   ];
 }
