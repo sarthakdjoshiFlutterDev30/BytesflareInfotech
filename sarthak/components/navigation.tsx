@@ -1,8 +1,10 @@
 'use client';
 
+import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { Menu, X, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Logo from '@/app/Logo.png';
 
 export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -42,7 +44,14 @@ export function Navigation() {
           {/* Logo */}
           <div className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg flex items-center justify-center">
-              <img src="https://media.licdn.com/dms/image/v2/D4D0BAQFUe8m5d02Q-w/company-logo_200_200/B4DZih0WwyH4AI-/0/1755061515713?e=1761782400&v=beta&t=_0-_VaZpmgI_WctUBmcCSO3g90CEZqw9JDtydP2j9lk" alt="Logo"  />
+              <Image
+                src={Logo}
+                alt="Logo"
+                width={24}
+                height={24}
+                className="object-contain"
+                priority
+              />
             </div>
             <span className="font-bold text-xl text-yellow-400">
               Bytesflare <span className="text-teal-500">Infotech</span>
