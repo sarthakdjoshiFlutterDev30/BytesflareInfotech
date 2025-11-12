@@ -1,0 +1,12 @@
+# robots.txt for https://bytesflareinfotech.vercel.app/
+
+User-agent: *
+Allow: /
+
+# Disallow unnecessary system paths (optional)
+Disallow: /admin/
+Disallow: /api/
+Disallow: /server/
+
+# Sitemap location
+Sitemap: https://bytesflareinfotech.vercel.app/sitemap.xml
