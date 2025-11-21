@@ -53,13 +53,13 @@ export function Services() {
   }, []);
 
   return (
-    <section id="services" ref={sectionRef} className="py-24 bg-gray-50">
+    <section id="services" ref={sectionRef} className="py-24 bg-slate-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-800 mb-6">
-            Our Core <span className="text-teal-500">Services</span>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
+            Our Core <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 via-cyan-400 to-blue-500">Services</span>
           </h2>
-          <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+          <p className="text-xl text-slate-300 max-w-3xl mx-auto">
             We deliver comprehensive IT solutions that drive digital transformation 
             and accelerate your business growth.
           </p>
@@ -69,32 +69,32 @@ export function Services() {
           {services.map((service, index) => (
             <Card 
               key={index} 
-              className="service-card opacity-0 group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-0 bg-white"
+              className="service-card opacity-0 group hover:shadow-cyan-500/30 transition-all duration-500 hover:-translate-y-2 border border-white/10 bg-slate-900/70 backdrop-blur"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               <CardContent className="p-8 text-center h-full flex flex-col">
-                <div className="w-16 h-16 bg-gradient-to-br from-teal-500 to-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                <div className="w-16 h-16 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-teal-500/30">
                   <service.icon className="w-8 h-8 text-white" />
                 </div>
                 
-                <h3 className="text-xl font-bold text-slate-800 mb-4">
+                <h3 className="text-xl font-bold text-white mb-4">
                   {service.title}
                 </h3>
                 
-                <p className="text-slate-600 mb-6 flex-grow">
+                <p className="text-slate-300 mb-6 flex-grow">
                   {service.description}
                 </p>
 
-                <ul className="text-sm text-slate-500 mb-6 space-y-2">
+                <ul className="text-sm text-slate-400 mb-6 space-y-2">
                   {service.features.map((feature, idx) => (
                     <li key={idx} className="flex items-center justify-center">
-                      <span className="w-2 h-2 bg-teal-500 rounded-full mr-2"></span>
+                      <span className="w-2 h-2 bg-teal-400 rounded-full mr-2 shadow shadow-teal-400/40"></span>
                       {feature}
                     </li>
                   ))}
                 </ul>
 
-                <button className="group-hover:opacity-100 opacity-0 text-teal-500 font-semibold flex items-center justify-center transition-all duration-300 hover:text-teal-600">
+                <button className="group-hover:opacity-100 opacity-0 text-teal-300 font-semibold flex items-center justify-center transition-all duration-300 hover:text-white">
                   Learn More
                   <ArrowRight className="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </button>

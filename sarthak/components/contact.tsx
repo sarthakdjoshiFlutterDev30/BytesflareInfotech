@@ -63,61 +63,62 @@ export function Contact() {
   }
 
   return (
-    <section id="contact" className="py-24 bg-slate-50">
+    <section id="contact" className="py-24 bg-slate-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Page heading */}
         <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 tracking-tight">
-            Get In <span className="text-slate-900 bg-gradient-to-r from-blue-700 to-blue-900 bg-clip-text text-transparent">Touch</span>
+          <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
+            Get In <span className="bg-gradient-to-r from-teal-400 via-cyan-400 to-violet-500 bg-clip-text text-transparent">Touch</span>
           </h2>
-          <p className="mt-6 max-w-3xl mx-auto text-lg text-slate-600">
-            Ready to transform your business? Let's discuss your project and create something amazing together.
+          <p className="mt-6 max-w-3xl mx-auto text-lg text-slate-300">
+            Ready to transform your business? Let&rsquo;s discuss your project and create something
+            amazing together.
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-12">
           {/* Left: Info cards */}
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-8">Let's Start a Conversation</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-8">Let&rsquo;s Start a Conversation</h2>
 
             <div className="space-y-4 mb-10">
-              <div className="p-6 bg-white rounded-xl border border-gray-100 shadow-sm flex gap-4 items-start">
+              <div className="p-6 bg-slate-900/70 rounded-xl border border-white/10 shadow-lg flex gap-4 items-start">
                 <div className="h-10 w-10 rounded-lg bg-slate-100 flex items-center justify-center">
-                  <Mail className="h-5 w-5 text-slate-700" />
+                  <Mail className="h-5 w-5 text-slate-900" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-slate-900">Email</p>
-                  <p className="text-slate-900 font-medium">bytesflareinfotechsales@gmail.com</p>
-                  <p className="text-slate-600 text-sm">Send us your project requirements</p>
+                  <p className="text-sm font-semibold text-slate-100">Email</p>
+                  <p className="text-white font-medium">bytesflareinfotechsales@gmail.com</p>
+                  <p className="text-slate-400 text-sm">Send us your project requirements</p>
                 </div>
               </div>
 
-              <div className="p-6 bg-white rounded-xl border border-gray-100 shadow-sm flex gap-4 items-start">
+              <div className="p-6 bg-slate-900/70 rounded-xl border border-white/10 shadow-lg flex gap-4 items-start">
                 <div className="h-10 w-10 rounded-lg bg-slate-100 flex items-center justify-center">
-                  <Phone className="h-5 w-5 text-slate-700" />
+                  <Phone className="h-5 w-5 text-slate-900" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-slate-900">Let's Connect</p>
-                  <p className="text-slate-900 font-medium">Ready to discuss your project?</p>
-                  <p className="text-slate-600 text-sm">Contact us through email or form</p>
+                  <p className="text-sm font-semibold text-slate-100">Let&rsquo;s Connect</p>
+                  <p className="text-white font-medium">Ready to discuss your project?</p>
+                  <p className="text-slate-400 text-sm">Contact us through email or form</p>
                 </div>
               </div>
 
-              <div className="p-6 bg-white rounded-xl border border-gray-100 shadow-sm flex gap-4 items-start">
+              <div className="p-6 bg-slate-900/70 rounded-xl border border-white/10 shadow-lg flex gap-4 items-start">
                 <div className="h-10 w-10 rounded-lg bg-slate-100 flex items-center justify-center">
-                  <Clock className="h-5 w-5 text-slate-700" />
+                  <Clock className="h-5 w-5 text-slate-900" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-slate-900">Business Hours</p>
-                  <p className="text-slate-900 font-medium">Mon - Fri: 9:00 AM - 6:00 PM</p>
-                  <p className="text-slate-600 text-sm">We're here to help you succeed</p>
+                  <p className="text-sm font-semibold text-slate-100">Business Hours</p>
+                  <p className="text-white font-medium">Mon - Fri: 9:00 AM - 6:00 PM</p>
+                  <p className="text-slate-400 text-sm">We&rsquo;re here to help you succeed</p>
                 </div>
               </div>
             </div>
 
             <div>
-              <h3 className="text-xl font-semibold text-slate-900 mb-4">Why Work With Us?</h3>
-              <ul className="space-y-3 text-slate-700">
+              <h3 className="text-xl font-semibold text-white mb-4">Why Work With Us?</h3>
+              <ul className="space-y-3 text-slate-300">
                 <li className="flex items-start gap-3"><span className="mt-2 h-2 w-2 rounded-sm bg-amber-500" />Free consultation and project analysis</li>
                 <li className="flex items-start gap-3"><span className="mt-2 h-2 w-2 rounded-sm bg-amber-500" />Transparent pricing and timeline</li>
                 <li className="flex items-start gap-3"><span className="mt-2 h-2 w-2 rounded-sm bg-amber-500" />Ongoing support and maintenance</li>
@@ -127,35 +128,35 @@ export function Contact() {
 
           {/* Right: Form */}
           <div>
-            <h3 className="text-2xl font-semibold text-slate-900 mb-4">Send Us a Message</h3>
+            <h3 className="text-2xl font-semibold text-white mb-4">Send Us a Message</h3>
             {submitted ? (
-              <div className="p-6 bg-white rounded-xl border border-gray-100 shadow-sm">
-                <h4 className="text-xl font-semibold text-teal-600 mb-2">Thanks!</h4>
-                <p className="text-slate-600">We received your message and will respond shortly.</p>
+              <div className="p-6 bg-slate-900/70 rounded-xl border border-white/10 shadow-lg">
+                <h4 className="text-xl font-semibold text-teal-300 mb-2">Thanks!</h4>
+                <p className="text-slate-300">We received your message and will respond shortly.</p>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="p-6 bg-white rounded-xl border border-gray-100 shadow-sm space-y-4">
+              <form onSubmit={handleSubmit} className="p-6 bg-slate-900/70 rounded-xl border border-white/10 shadow-lg space-y-4">
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Full Name *</label>
-                    <Input name="name" value={formData.name} onChange={handleChange} placeholder="Your full name" required />
+                    <label className="block text-sm font-medium text-slate-300 mb-1">Full Name *</label>
+                    <Input name="name" value={formData.name} onChange={handleChange} placeholder="Your full name" required className="bg-slate-950 border-white/10 text-white placeholder:text-slate-500" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Phone Number (Optional)</label>
-                    <Input name="phone" value={formData.phone} onChange={handleChange} placeholder="+91 XXXXX XXXXX" />
+                    <label className="block text-sm font-medium text-slate-300 mb-1">Phone Number (Optional)</label>
+                    <Input name="phone" value={formData.phone} onChange={handleChange} placeholder="+91 XXXXX XXXXX" className="bg-slate-950 border-white/10 text-white placeholder:text-slate-500" />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Email Address *</label>
-                  <Input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="your.email@example.com" required />
+                  <label className="block text-sm font-medium text-slate-300 mb-1">Email Address *</label>
+                  <Input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="your.email@example.com" required className="bg-slate-950 border-white/10 text-white placeholder:text-slate-500" />
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Project Type</label>
+                    <label className="block text-sm font-medium text-slate-300 mb-1">Project Type</label>
                     <Select value={formData.projectType} onValueChange={(v) => setFormData((p) => ({ ...p, projectType: v }))}>
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-slate-950 border-white/10 text-white">
                         <SelectValue placeholder="Select project type" />
                       </SelectTrigger>
                       <SelectContent>
@@ -167,9 +168,9 @@ export function Contact() {
                     </Select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Project Budget</label>
+                    <label className="block text-sm font-medium text-slate-300 mb-1">Project Budget</label>
                     <Select value={formData.budget} onValueChange={(v) => setFormData((p) => ({ ...p, budget: v }))}>
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-slate-950 border-white/10 text-white">
                         <SelectValue placeholder="Select budget range" />
                       </SelectTrigger>
                       <SelectContent>
@@ -184,16 +185,16 @@ export function Contact() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Project Description *</label>
-                  <Textarea name="message" value={formData.message} onChange={handleChange} placeholder="Tell us about your project requirements..." required rows={6} />
+                  <label className="block text-sm font-medium text-slate-300 mb-1">Project Description *</label>
+                  <Textarea name="message" value={formData.message} onChange={handleChange} placeholder="Tell us about your project requirements..." required rows={6} className="bg-slate-950 border-white/10 text-white placeholder:text-slate-500" />
                 </div>
 
-                <Button type="submit" disabled={isSubmitting} className="w-full bg-slate-900 hover:bg-slate-800 text-white">
+                <Button type="submit" disabled={isSubmitting} className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:opacity-90 text-white">
                   {isSubmitting ? 'Sending…' : (
                     <span className="inline-flex items-center gap-2"><Send className="h-4 w-4" /> Send Message</span>
                   )}
                 </Button>
-                {statusMessage && <p className="text-center text-sm mt-2">{statusMessage}</p>}
+                {statusMessage && <p className="text-center text-sm mt-2 text-slate-200">{statusMessage}</p>}
               </form>
             )}
           </div>

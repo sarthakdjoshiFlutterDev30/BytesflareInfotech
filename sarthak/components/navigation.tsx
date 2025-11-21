@@ -35,7 +35,7 @@ export function Navigation() {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? 'bg-white/95 backdrop-blur-sm shadow-lg border-b border-gray-100'
+          ? 'bg-slate-900/90 backdrop-blur-2xl shadow-2xl border-b border-white/10'
           : 'bg-transparent'
       }`}
     >
@@ -53,8 +53,8 @@ export function Navigation() {
                 priority
               />
             </div>
-            <span className="font-bold text-xl text-yellow-400">
-              Bytesflare <span className="text-teal-500">Infotech</span>
+            <span className="font-bold text-xl text-teal-300">
+              Bytesflare <span className="text-cyan-400">Infotech</span>
             </span>
           </div>
 
@@ -64,13 +64,13 @@ export function Navigation() {
               <a
                 key={link.href}
                 href={link.href}
-                className="text-slate-600 hover:text-teal-500 transition-colors duration-200 font-medium"
+                className="text-slate-300 hover:text-cyan-300 transition-colors duration-200 font-medium"
               >
                 {link.label}
               </a>
             ))}
             <a href='#contact'
-              className="bg-teal-500 hover:bg-teal-600 text-white px-6 py-2 rounded-lg transition-all duration-200 hover:shadow-lg hover:scale-105"
+              className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:shadow-cyan-500/40 text-white px-6 py-2 rounded-full transition-all duration-200 hover:scale-105"
             >
               Get Started
             </a>
@@ -80,7 +80,7 @@ export function Navigation() {
           <div className="md:hidden">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 rounded-md text-slate-600 hover:text-teal-500 transition-colors"
+              className="p-2 rounded-md text-slate-200 hover:text-teal-400 transition-colors"
             >
               {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -89,13 +89,13 @@ export function Navigation() {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden bg-white border-t border-gray-100 shadow-lg">
+          <div className="md:hidden bg-slate-900/95 border-t border-white/10 shadow-2xl">
             <div className="px-2 pt-2 pb-3 space-y-1">
               {navLinks.map((link) => (
                 <a
                   key={link.href}
                   href={link.href}
-                  className="block px-3 py-2 rounded-md text-slate-600 hover:text-teal-500 hover:bg-teal-50 transition-all duration-200"
+                  className="block px-3 py-2 rounded-md text-slate-300 hover:text-white hover:bg-white/5 transition-all duration-200"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {link.label}
@@ -104,7 +104,7 @@ export function Navigation() {
               <div className="px-3 pt-2">
                 <a
                 href='#contact'
-                className="block w-full text-center bg-teal-500 hover:bg-teal-600 text-white px-6 py-2 rounded-lg transition-all duration-200 hover:shadow-lg hover:scale-105"
+                className="block w-full text-center bg-gradient-to-r from-teal-500 to-cyan-500 text-white px-6 py-2 rounded-full transition-all duration-200 hover:shadow-lg hover:scale-105"
               >
                 Get Started
               </a>

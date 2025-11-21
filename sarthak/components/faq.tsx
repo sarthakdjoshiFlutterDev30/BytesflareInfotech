@@ -58,13 +58,13 @@ export function FAQ() {
   };
 
   return (
-    <section className="py-24 bg-white">
+    <section className="py-24 bg-slate-950">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-800 mb-6">
-            Frequently Asked <span className="text-teal-500">Questions</span>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
+            Frequently Asked <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-purple-500">Questions</span>
           </h2>
-          <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+          <p className="text-xl text-slate-300 max-w-2xl mx-auto">
             Get answers to common questions about our services, process, and how we can help your business grow.
           </p>
         </div>
@@ -73,26 +73,26 @@ export function FAQ() {
           {faqs.map((faq, index) => (
             <div
               key={index}
-              className="bg-gray-50 rounded-2xl overflow-hidden hover:shadow-lg transition-all duration-300"
+              className="bg-slate-900/70 rounded-2xl overflow-hidden hover:shadow-cyan-500/20 transition-all duration-300 border border-white/10"
             >
               <button
                 onClick={() => toggleItem(index)}
-                className="w-full px-8 py-6 text-left flex items-center justify-between hover:bg-gray-100 transition-colors"
+                className="w-full px-8 py-6 text-left flex items-center justify-between hover:bg-white/5 transition-colors"
               >
-                <h3 className="text-lg font-semibold text-slate-800 pr-4">
+                <h3 className="text-lg font-semibold text-slate-100 pr-4">
                   {faq.question}
                 </h3>
                 {openItems.includes(index) ? (
-                  <ChevronUp className="w-6 h-6 text-teal-500 flex-shrink-0" />
+                  <ChevronUp className="w-6 h-6 text-teal-400 flex-shrink-0" />
                 ) : (
-                  <ChevronDown className="w-6 h-6 text-slate-400 flex-shrink-0" />
+                  <ChevronDown className="w-6 h-6 text-slate-500 flex-shrink-0" />
                 )}
               </button>
               
               {openItems.includes(index) && (
                 <div className="px-8 pb-6">
-                  <div className="border-t border-gray-200 pt-4">
-                    <p className="text-slate-600 leading-relaxed">
+                  <div className="border-t border-white/10 pt-4">
+                    <p className="text-slate-300 leading-relaxed">
                       {faq.answer}
                     </p>
                   </div>

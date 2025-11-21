@@ -20,7 +20,7 @@ import PlansPage from '@/components/Plans';
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-slate-950 text-slate-100">
       <Navigation />
       <main>
         <Hero />

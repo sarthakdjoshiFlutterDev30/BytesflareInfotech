@@ -58,20 +58,20 @@ export function Process() {
   }, []);
 
   return (
-    <section id="process" ref={sectionRef} className="py-24 bg-white">
+    <section id="process" ref={sectionRef} className="py-24 bg-slate-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-800 mb-6">
-            Our Proven <span className="text-teal-500">Process</span>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
+            Our Proven <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-500">Process</span>
           </h2>
-          <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+          <p className="text-xl text-slate-300 max-w-3xl mx-auto">
             A systematic approach that ensures project success from concept to deployment and beyond.
           </p>
         </div>
 
         <div className="relative">
           {/* Process timeline line */}
-          <div className="hidden lg:block absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-gradient-to-b from-teal-500 to-blue-500 rounded-full"></div>
+          <div className="hidden lg:block absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-gradient-to-b from-teal-400 via-cyan-500 to-indigo-500 rounded-full shadow-[0_0_20px_rgba(45,212,191,0.4)]"></div>
 
           <div className="space-y-16">
             {processSteps.map((step, index) => (
@@ -84,19 +84,19 @@ export function Process() {
               >
                 {/* Content */}
                 <div className="flex-1 lg:max-w-md">
-                  <div className={`bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 ${
+                  <div className={`bg-slate-900/70 border border-white/10 p-8 rounded-2xl shadow-xl hover:shadow-teal-500/30 transition-all duration-300 ${
                     index % 2 === 0 ? 'lg:text-right' : 'lg:text-left'
                   }`}>
-                    <h3 className="text-2xl font-bold text-slate-800 mb-4">
+                    <h3 className="text-2xl font-bold text-white mb-4">
                       {step.title}
                     </h3>
-                    <p className="text-slate-600 mb-6">
+                    <p className="text-slate-300 mb-6">
                       {step.description}
                     </p>
                     <ul className={`space-y-2 ${index % 2 === 0 ? 'lg:text-right' : 'lg:text-left'}`}>
                       {step.details.map((detail, idx) => (
-                        <li key={idx} className="text-sm text-slate-500 flex items-center">
-                          <span className="w-2 h-2 bg-teal-500 rounded-full mr-2 flex-shrink-0"></span>
+                        <li key={idx} className="text-sm text-slate-400 flex items-center">
+                          <span className="w-2 h-2 bg-gradient-to-r from-teal-400 to-cyan-500 rounded-full mr-2 flex-shrink-0"></span>
                           {detail}
                         </li>
                       ))}
@@ -106,11 +106,11 @@ export function Process() {
 
                 {/* Icon */}
                 <div className="relative z-10">
-                  <div className="w-20 h-20 bg-gradient-to-br from-teal-500 to-teal-600 rounded-full flex items-center justify-center shadow-lg">
+                  <div className="w-20 h-20 bg-gradient-to-br from-teal-400 to-cyan-500 rounded-full flex items-center justify-center shadow-2xl shadow-teal-500/40">
                     <step.icon className="w-10 h-10 text-white" />
                   </div>
-                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-md">
-                    <span className="text-sm font-bold text-teal-600">{index + 1}</span>
+                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-slate-950 rounded-full flex items-center justify-center shadow-md border border-white/20">
+                    <span className="text-sm font-bold text-teal-300">{index + 1}</span>
                   </div>
                 </div>
 

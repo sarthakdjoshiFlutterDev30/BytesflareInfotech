@@ -124,21 +124,21 @@ export function Careers() {
   const [selectedJob, setSelectedJob] = useState<string | null>(null);
 
   return (
-    <section id="careers" className="py-24 bg-gradient-to-br from-slate-50 to-white">
+    <section id="careers" className="py-24 bg-slate-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-800 mb-6">
-            Join Our <span className="text-teal-500">Team</span>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
+            Join Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 via-cyan-400 to-purple-500">Team</span>
           </h2>
-          <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-            Be part of a dynamic team that's shaping the future of technology. 
-            We're looking for passionate individuals who want to make a real impact.
+          <p className="text-xl text-slate-300 max-w-3xl mx-auto">
+            Be part of a dynamic team that&rsquo;s shaping the future of technology. We&rsquo;re looking
+            for passionate individuals who want to make a real impact.
           </p>
         </div>
 
         {/* Company Culture */}
         <div className="mb-20">
-          <div className="bg-gradient-to-r from-teal-500 to-blue-500 p-12 rounded-3xl text-white text-center mb-12">
+          <div className="bg-gradient-to-r from-teal-500 to-indigo-600 p-12 rounded-3xl text-white text-center mb-12 shadow-lg shadow-teal-500/30">
             <h3 className="text-3xl font-bold mb-6">Why Work With Us?</h3>
             <p className="text-xl opacity-90 max-w-3xl mx-auto">
               At Bytesflare Infotech, we believe in fostering innovation, collaboration, and personal growth. 
@@ -148,12 +148,12 @@ export function Careers() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {benefits.map((benefit, index) => (
-              <div key={index} className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-teal-500 to-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <div key={index} className="text-center bg-slate-900/70 rounded-2xl p-6 border border-white/10 shadow-lg hover:shadow-cyan-500/20 transition-all duration-300">
+                <div className="w-16 h-16 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow shadow-cyan-500/30">
                   <benefit.icon className="w-8 h-8 text-white" />
                 </div>
-                <h4 className="text-lg font-bold text-slate-800 mb-2">{benefit.title}</h4>
-                <p className="text-slate-600">{benefit.description}</p>
+                <h4 className="text-lg font-bold text-white mb-2">{benefit.title}</h4>
+                <p className="text-slate-300">{benefit.description}</p>
               </div>
             ))}
           </div>
@@ -161,44 +161,44 @@ export function Careers() {
 
         {/* Job Openings */}
         <div>
-          <h3 className="text-2xl font-bold text-slate-800 mb-8 text-center">Current Openings</h3>
+          <h3 className="text-2xl font-bold text-white mb-8 text-center">Current Openings</h3>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {jobOpenings.map((job, index) => (
-              <Card key={index} className="hover:shadow-2xl transition-all duration-300 border-0 bg-white">
+              <Card key={index} className="hover:shadow-cyan-500/30 transition-all duration-300 border border-white/10 bg-slate-900/70">
                 <CardContent className="p-8">
                   <div className="flex justify-between items-start mb-4">
                     <div>
-                      <h4 className="text-xl font-bold text-slate-800 mb-2">{job.title}</h4>
-                      <span className="bg-teal-100 text-teal-700 px-3 py-1 rounded-full text-sm font-medium">
+                      <h4 className="text-xl font-bold text-white mb-2">{job.title}</h4>
+                      <span className="bg-white/10 text-teal-200 px-3 py-1 rounded-full text-sm font-medium">
                         {job.department}
                       </span>
                     </div>
                   </div>
 
-                  <p className="text-slate-600 mb-6">{job.description}</p>
+                  <p className="text-slate-300 mb-6">{job.description}</p>
 
                   <div className="space-y-3 mb-6">
-                    <div className="flex items-center text-sm text-slate-500">
+                    <div className="flex items-center text-sm text-slate-400">
                       <MapPin className="w-4 h-4 mr-2" />
                       {job.location}
                     </div>
-                    <div className="flex items-center text-sm text-slate-500">
+                    <div className="flex items-center text-sm text-slate-400">
                       <Clock className="w-4 h-4 mr-2" />
                       {job.type}
                     </div>
-                    <div className="flex items-center text-sm text-slate-500">
+                    <div className="flex items-center text-sm text-slate-400">
                       <IndianRupee className="w-4 h-4 mr-2" />
                       {job.salary}
                     </div>
                   </div>
 
                   <div className="mb-6">
-                    <h5 className="font-semibold text-slate-700 mb-2">Key Requirements:</h5>
+                    <h5 className="font-semibold text-slate-200 mb-2">Key Requirements:</h5>
                     <ul className="space-y-1">
                       {job.requirements.map((req, idx) => (
-                        <li key={idx} className="text-sm text-slate-600 flex items-center">
-                          <span className="w-2 h-2 bg-teal-500 rounded-full mr-2 flex-shrink-0"></span>
+                        <li key={idx} className="text-sm text-slate-300 flex items-center">
+                          <span className="w-2 h-2 bg-teal-400 rounded-full mr-2 flex-shrink-0"></span>
                           {req}
                         </li>
                       ))}
@@ -206,7 +206,7 @@ export function Careers() {
                   </div>
 
                   <Button 
-                    className="w-full bg-teal-500 hover:bg-teal-600 text-white group"
+                    className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:opacity-90 text-white group"
                     onClick={() => setSelectedJob(job.title)}
                   >
                     Apply Now
@@ -220,15 +220,15 @@ export function Careers() {
 
         {/* Call to Action */}
         <div className="mt-16 text-center">
-          <div className="bg-gray-100 p-8 rounded-2xl">
-            <h3 className="text-2xl font-bold text-slate-800 mb-4">Don't See the Right Role?</h3>
-            <p className="text-slate-600 mb-6 max-w-2xl mx-auto">
-              We're always looking for talented individuals to join our team. 
-              Send us your resume and let us know how you'd like to contribute to our mission.
+          <div className="bg-slate-900/70 p-8 rounded-2xl border border-white/10">
+            <h3 className="text-2xl font-bold text-white mb-4">Don&rsquo;t See the Right Role?</h3>
+            <p className="text-slate-300 mb-6 max-w-2xl mx-auto">
+              We&rsquo;re always looking for talented individuals to join our team. Send us your resume
+              and let us know how you&rsquo;d like to contribute to our mission.
             </p>
             <Button 
               size="lg"
-              className="bg-teal-500 hover:bg-teal-600 text-white px-8 py-4 rounded-lg transition-all duration-300 hover:shadow-lg hover:scale-105"
+              className="bg-gradient-to-r from-teal-500 to-cyan-500 text-white px-8 py-4 rounded-lg transition-all duration-300 hover:shadow-lg hover:scale-105"
               onClick={() => window.open("mailto:byteflare.hr@gmail.com")}
             >
               Send Your Resume

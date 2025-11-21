@@ -50,8 +50,8 @@ export function Hero() {
               }
             }}
             >
-              <Play className="mr-2 w-5 h-5 group-hover:scale-110 transition-transform" />
-              Explore Our Work
+              <Play className="mr-2 w-5 h-5 text-white group-hover:scale-110 transition-transform" />
+               <span className="text-white">Explore Our Work</span>
             </Button>
           </div>
         </div>

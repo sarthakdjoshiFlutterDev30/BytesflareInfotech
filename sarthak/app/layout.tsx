@@ -25,7 +25,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" className="scroll-smooth dark">
       <Script id="google-tag-manager" strategy="afterInteractive">
         {`
           (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -35,7 +35,7 @@ export default function RootLayout({
           })(window,document,'script','dataLayer','GTM-NWCMPVT5');
         `}
       </Script>
-      <body>
+      <body className="bg-slate-950 text-slate-100 antialiased">
         <noscript
           dangerouslySetInnerHTML={{
             __html: `

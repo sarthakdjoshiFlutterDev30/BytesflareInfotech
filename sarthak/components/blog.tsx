@@ -1,9 +1,9 @@
 'use client';
 
-import { Calendar, User, ArrowRight, Clock } from 'lucide-react';
+import Image from 'next/image';
+import { Calendar, User, Clock } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { formatDate } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 
 const blogPosts = [
   {
@@ -68,13 +68,13 @@ export function Blog() {
   const regularPosts = blogPosts.filter(post => !post.featured);
 
   return (
-    <section id="blog" className="py-24 bg-gray-50">
+    <section id="blog" className="py-24 bg-slate-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-800 mb-6">
-            Latest from Our <span className="text-teal-500">Blog</span>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
+            Latest from Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-purple-500">Blog</span>
           </h2>
-          <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+          <p className="text-xl text-slate-300 max-w-3xl mx-auto">
             Stay updated with the latest trends, insights, and best practices in technology and digital transformation.
           </p>
         </div>
@@ -82,23 +82,25 @@ export function Blog() {
         {/* Featured Post */}
         {featuredPost && (
           <div className="mb-16">
-            <Card className="overflow-hidden hover:shadow-2xl transition-all duration-300 border-0">
+            <Card className="overflow-hidden hover:shadow-cyan-500/30 transition-all duration-300 border border-white/10 bg-slate-900/60 backdrop-blur">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
-                <div className="relative h-64 lg:h-auto">
-                  <img
+                <div className="relative h-64 lg:h-auto min-h-[16rem]">
+                  <Image
                     src={featuredPost.image}
                     alt={featuredPost.title}
-                    className="w-full h-full object-cover"
+                    fill
+                    sizes="(min-width: 1024px) 50vw, 100vw"
+                    className="object-cover"
                   />
                   <div className="absolute top-4 left-4">
-                    <span className="bg-teal-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                    <span className="bg-gradient-to-r from-teal-500 to-cyan-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow shadow-cyan-500/30">
                       Featured
                     </span>
                   </div>
                 </div>
                 <CardContent className="p-8 lg:p-12 flex flex-col justify-center">
-                  <div className="flex items-center space-x-4 text-sm text-slate-500 mb-4">
-                    <span className="bg-teal-100 text-teal-700 px-3 py-1 rounded-full font-medium">
+                  <div className="flex items-center space-x-4 text-sm text-slate-300 mb-4">
+                    <span className="bg-white/10 text-teal-200 px-3 py-1 rounded-full font-medium">
                       {featuredPost.category}
                     </span>
                     <div className="flex items-center">
@@ -110,16 +112,16 @@ export function Blog() {
                       {featuredPost.readTime}
                     </div>
                   </div>
-                  <h3 className="text-2xl lg:text-3xl font-bold text-slate-800 mb-4">
+                  <h3 className="text-2xl lg:text-3xl font-bold text-white mb-4">
                     {featuredPost.title}
                   </h3>
-                  <p className="text-slate-600 mb-6 text-lg">
+                  <p className="text-slate-300 mb-6 text-lg">
                     {featuredPost.excerpt}
                   </p>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
-                      <User className="w-5 h-5 text-slate-400 mr-2" />
-                      <span className="text-slate-600 font-medium">{featuredPost.author}</span>
+                      <User className="w-5 h-5 text-slate-200 mr-2" />
+                      <span className="text-slate-200 font-medium">{featuredPost.author}</span>
                     </div>
                   </div>
                 </CardContent>
@@ -131,21 +133,23 @@ export function Blog() {
         {/* Regular Posts Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {regularPosts.slice(0, 6).map((post, index) => (
-            <Card key={index} className="group hover:shadow-2xl transition-all duration-300 border-0 bg-white overflow-hidden">
+            <Card key={index} className="group hover:shadow-cyan-500/30 transition-all duration-300 border border-white/10 bg-slate-900/70 overflow-hidden backdrop-blur">
               <div className="relative h-48 overflow-hidden">
-                <img
+                <Image
                   src={post.image}
                   alt={post.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  fill
+                  sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
+                  className="object-cover group-hover:scale-110 transition-transform duration-300"
                 />
                 <div className="absolute top-4 left-4">
-                  <span className="bg-white/90 text-slate-700 px-3 py-1 rounded-full text-xs font-semibold">
+                  <span className="bg-slate-900/80 text-slate-100 px-3 py-1 rounded-full text-xs font-semibold">
                     {post.category}
                   </span>
                 </div>
               </div>
               <CardContent className="p-6">
-                <div className="flex items-center space-x-4 text-xs text-slate-500 mb-3">
+                <div className="flex items-center space-x-4 text-xs text-slate-300 mb-3">
                   <div className="flex items-center">
                     <Calendar className="w-3 h-3 mr-1" />
                     {formatDate(post.date)}
@@ -155,16 +159,16 @@ export function Blog() {
                     {post.readTime}
                   </div>
                 </div>
-                <h3 className="text-lg font-bold text-slate-800 mb-3 group-hover:text-teal-600 transition-colors">
+                <h3 className="text-lg font-bold text-white mb-3 group-hover:text-teal-300 transition-colors">
                   {post.title}
                 </h3>
-                <p className="text-slate-600 text-sm mb-4 line-clamp-3">
+                <p className="text-slate-300 text-sm mb-4 line-clamp-3">
                   {post.excerpt}
                 </p>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
-                    <User className="w-4 h-4 text-slate-400 mr-1" />
-                    <span className="text-slate-600 text-sm">{post.author}</span>
+                    <User className="w-4 h-4 text-slate-200 mr-1" />
+                    <span className="text-slate-200 text-sm">{post.author}</span>
                   </div>
                   </div>
               </CardContent>

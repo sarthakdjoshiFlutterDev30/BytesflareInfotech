@@ -1,6 +1,7 @@
 'use client';
 
 import { ExternalLink, ArrowRight } from 'lucide-react';
+import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
@@ -172,33 +173,35 @@ const projects = [
 
 export function Portfolio() {
   return (
-    <section id="portfolio" className="py-24 bg-gray-50">
+    <section id="portfolio" className="py-24 bg-slate-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-800 mb-6">
-            Success <span className="text-teal-500">Stories</span>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
+            Success <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 via-cyan-400 to-violet-500">Stories</span>
           </h2>
-          <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-            Discover how we've helped businesses transform their digital landscape
-            and achieve measurable results.
+          <p className="text-xl text-slate-300 max-w-3xl mx-auto">
+            Discover how we&rsquo;ve helped businesses transform their digital landscape and achieve
+            measurable results.
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
           {projects.map((project, index) => (
-            <Card key={index} className="group hover:shadow-2xl transition-all duration-500 border-0 bg-white overflow-hidden">
+            <Card key={index} className="group hover:shadow-cyan-500/30 transition-all duration-500 border border-white/10 bg-slate-900/70 overflow-hidden backdrop-blur">
               <div className="relative h-48 overflow-hidden">
-                <img
+                <Image
                   src={project.image}
                   alt={project.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  fill
+                  sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                  className="object-cover group-hover:scale-110 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                 <div className="absolute top-4 left-4">
                   {project.tags.map((tag, idx) => (
                     <span
                       key={idx}
-                      className="inline-block bg-teal-500 text-white text-xs px-3 py-1 rounded-full mr-2 mb-2"
+                      className="inline-block bg-gradient-to-r from-teal-500 to-cyan-500 text-white text-xs px-3 py-1 rounded-full mr-2 mb-2 shadow shadow-cyan-500/30"
                     >
                       {tag}
                     </span>
@@ -207,34 +210,34 @@ export function Portfolio() {
               </div>
 
               <CardContent className="p-6">
-                <h3 className="text-xl font-bold text-slate-800 mb-2">
+                <h3 className="text-xl font-bold text-white mb-2">
                   {project.title}
                 </h3>
-                <p className="text-teal-600 font-semibold mb-4">
+                <p className="text-teal-300 font-semibold mb-4">
                   {project.client}
                 </p>
 
                 <div className="space-y-4">
                   <div>
-                    <h4 className="font-semibold text-slate-700 mb-2">Challenge:</h4>
-                    <p className="text-slate-600 text-sm">
+                    <h4 className="font-semibold text-slate-200 mb-2">Challenge:</h4>
+                    <p className="text-slate-300 text-sm">
                       {project.challenge}
                     </p>
                   </div>
 
                   <div>
-                    <h4 className="font-semibold text-slate-700 mb-2">Solution:</h4>
-                    <p className="text-slate-600 text-sm">
+                    <h4 className="font-semibold text-slate-200 mb-2">Solution:</h4>
+                    <p className="text-slate-300 text-sm">
                       {project.solution}
                     </p>
                   </div>
 
                   <div>
-                    <h4 className="font-semibold text-slate-700 mb-2">Results:</h4>
+                    <h4 className="font-semibold text-slate-200 mb-2">Results:</h4>
                     <ul className="space-y-1">
                       {project.results.map((result, idx) => (
-                        <li key={idx} className="text-slate-600 text-sm flex items-center">
-                          <span className="w-2 h-2 bg-teal-500 rounded-full mr-2 flex-shrink-0"></span>
+                        <li key={idx} className="text-slate-300 text-sm flex items-center">
+                          <span className="w-2 h-2 bg-teal-400 rounded-full mr-2 flex-shrink-0"></span>
                           {result}
                         </li>
                       ))}

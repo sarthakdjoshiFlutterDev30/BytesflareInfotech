@@ -58,13 +58,13 @@ export function TechStack() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="py-24 bg-gradient-to-br from-slate-50 to-white">
+    <section ref={sectionRef} className="py-24 bg-slate-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-800 mb-6">
-            Our Technology <span className="text-teal-500">Stack</span>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
+            Our Technology <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-cyan-500">Stack</span>
           </h2>
-          <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+          <p className="text-xl text-slate-300 max-w-3xl mx-auto">
             We leverage cutting-edge technologies and industry best practices to build scalable, 
             secure, and high-performance solutions.
           </p>
@@ -74,14 +74,14 @@ export function TechStack() {
           {techCategories.map((category, index) => (
             <div
               key={index}
-              className="tech-card opacity-0 bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-gray-100"
+              className="tech-card opacity-0 bg-slate-900/70 p-8 rounded-2xl shadow-lg hover:shadow-cyan-500/30 transition-all duration-300 hover:-translate-y-1 border border-white/10 backdrop-blur"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
-              <div className="w-16 h-16 bg-gradient-to-br from-teal-500 to-teal-600 rounded-2xl flex items-center justify-center mb-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-2xl flex items-center justify-center mb-6 shadow shadow-cyan-500/30">
                 <category.icon className="w-8 h-8 text-white" />
               </div>
               
-              <h3 className="text-xl font-bold text-slate-800 mb-6">
+              <h3 className="text-xl font-bold text-white mb-6">
                 {category.title}
               </h3>
 
@@ -89,7 +89,7 @@ export function TechStack() {
                 {category.technologies.map((tech, idx) => (
                   <span
                     key={idx}
-                    className="px-3 py-1 bg-teal-50 text-teal-700 rounded-full text-sm font-medium hover:bg-teal-100 transition-colors cursor-default"
+                    className="px-3 py-1 bg-white/10 text-teal-200 rounded-full text-sm font-medium hover:bg-teal-500/20 transition-colors cursor-default"
                   >
                     {tech}
                   </span>
@@ -100,7 +100,7 @@ export function TechStack() {
         </div>
 
         <div className="mt-16 text-center">
-          <div className="bg-gradient-to-r from-teal-500 to-blue-500 p-8 rounded-2xl text-white">
+          <div className="bg-gradient-to-r from-teal-500 to-blue-600 p-8 rounded-2xl text-white shadow-lg shadow-teal-500/30">
             <Shield className="w-12 h-12 mx-auto mb-4" />
             <h3 className="text-2xl font-bold mb-4">Security & Compliance First</h3>
             <p className="text-lg opacity-90 max-w-2xl mx-auto">

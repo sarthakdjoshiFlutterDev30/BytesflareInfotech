@@ -54,21 +54,21 @@ export function TrustSignals() {
   };
 
   return (
-    <section className="py-24 bg-white">
+    <section className="py-24 bg-slate-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Client Logos */}
         <div className="mb-20">
-          <h3 className="text-center text-slate-600 text-lg font-semibold mb-12">
+          <h3 className="text-center text-slate-300 text-lg font-semibold mb-12">
             Trusted by Leading Companies
           </h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 items-center opacity-60">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 items-center opacity-70">
             {clientLogos.map((client, index) => (
               <div
                 key={index}
                 className="flex items-center justify-center p-4 hover:opacity-100 transition-opacity duration-300"
               >
-                <div className="w-24 h-12 bg-slate-200 rounded flex items-center justify-center">
-                  <span className="text-slate-500 text-sm font-semibold">
+                <div className="w-24 h-12 bg-slate-900 rounded flex items-center justify-center border border-white/10">
+                  <span className="text-slate-300 text-sm font-semibold">
                     {client.name}
                   </span>
                 </div>
@@ -79,27 +79,27 @@ export function TrustSignals() {
 
         {/* Testimonials */}
         <div className="text-center">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-800 mb-16">
-            What Our <span className="text-teal-500">Clients Say</span>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-16">
+            What Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-purple-500">Clients Say</span>
           </h2>
 
           <div className="relative max-w-4xl mx-auto">
-            <div className="bg-gradient-to-br from-slate-50 to-white p-8 md:p-12 rounded-2xl shadow-lg">
+            <div className="bg-slate-900/70 backdrop-blur p-8 md:p-12 rounded-2xl border border-white/10 shadow-2xl">
               <div className="flex justify-center mb-6">
                 {[...Array(testimonials[currentTestimonial].rating)].map((_, i) => (
-                  <Star key={i} className="w-6 h-6 text-yellow-400 fill-current" />
+                  <Star key={i} className="w-6 h-6 text-amber-300 fill-current drop-shadow-[0_0_6px_rgba(251,191,36,0.6)]" />
                 ))}
               </div>
 
-              <blockquote className="text-xl md:text-2xl text-slate-700 mb-8 leading-relaxed">
-                "{testimonials[currentTestimonial].quote}"
+              <blockquote className="text-xl md:text-2xl text-slate-200 mb-8 leading-relaxed">
+                &ldquo;{testimonials[currentTestimonial].quote}&rdquo;
               </blockquote>
 
               <div>
-                <div className="font-bold text-slate-800 text-lg">
+                <div className="font-bold text-white text-lg">
                   {testimonials[currentTestimonial].author}
                 </div>
-                <div className="text-slate-500">
+                <div className="text-slate-400">
                   {testimonials[currentTestimonial].position}
                 </div>
               </div>
@@ -111,7 +111,7 @@ export function TrustSignals() {
                 variant="outline"
                 size="sm"
                 onClick={prevTestimonial}
-                className="w-10 h-10 rounded-full p-0 border-slate-300 hover:border-teal-500 hover:text-teal-500"
+                className="w-10 h-10 rounded-full p-0 border-slate-600 hover:border-teal-500 hover:text-teal-400 text-slate-300"
               >
                 <ChevronLeft className="w-4 h-4" />
               </Button>
@@ -119,7 +119,7 @@ export function TrustSignals() {
                 variant="outline"
                 size="sm"
                 onClick={nextTestimonial}
-                className="w-10 h-10 rounded-full p-0 border-slate-300 hover:border-teal-500 hover:text-teal-500"
+                className="w-10 h-10 rounded-full p-0 border-slate-600 hover:border-teal-500 hover:text-teal-400 text-slate-300"
               >
                 <ChevronRight className="w-4 h-4" />
               </Button>
@@ -132,7 +132,7 @@ export function TrustSignals() {
                   key={index}
                   onClick={() => setCurrentTestimonial(index)}
                   className={`w-3 h-3 rounded-full transition-colors ${
-                    index === currentTestimonial ? 'bg-teal-500' : 'bg-slate-300'
+                    index === currentTestimonial ? 'bg-gradient-to-r from-teal-400 to-cyan-500' : 'bg-slate-600'
                   }`}
                 />
               ))}

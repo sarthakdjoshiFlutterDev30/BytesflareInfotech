@@ -29,8 +29,8 @@ export function Footer() {
               </span>
             </div>
             <p className="text-slate-300 mb-6 max-w-md">
-              We're passionate about crafting exceptional digital experiences that drive business growth. 
-              Let's transform your vision into cutting-edge reality.
+              We&rsquo;re passionate about crafting exceptional digital experiences that drive business
+              growth. Let&rsquo;s transform your vision into cutting-edge reality.
             </p>
             <div className="flex space-x-4">
               <a href="https://x.com/BytesF99635" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center hover:bg-teal-500 transition-colors">

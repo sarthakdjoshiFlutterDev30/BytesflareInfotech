@@ -16,7 +16,7 @@ export default function TechnicalSupportPage() {
           className="mb-8 flex items-center justify-between"
         >
           <div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold leading-tight">Technical Support — <span className="text-indigo-600">Bytesflare Infotech</span></h1>
+            <h1 className="text-3xl sm:text-4xl font-extrabold leading-tight"><span className="text-yellow-400">Technical Support — </span><span className="text-indigo-600">Bytesflare Infotech</span></h1>
             <p className="mt-2 text-sm text-neutral-600">Clear, simple support plans to keep your app or website running smoothly.</p>
           </div>
           <div className="hidden sm:flex gap-3">
@@ -34,7 +34,9 @@ export default function TechnicalSupportPage() {
               </div>
               <div>
                 <h3 className="text-lg font-semibold">Free Support — 1 Year</h3>
-                <p className="mt-1 text-sm text-neutral-600">Included after delivery — we'll keep things stable and help you use the product.</p>
+                <p className="mt-1 text-sm text-neutral-600">
+                  Included after delivery — we&rsquo;ll keep things stable and help you use the product.
+                </p>
               </div>
             </div>
 

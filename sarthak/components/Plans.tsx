@@ -49,25 +49,25 @@ export default function PlansPage() {
   ];
 
   return (
-    <main className="min-h-screen bg-neutral-50 p-6 sm:p-12">
+    <main className="min-h-screen bg-slate-950 p-6 sm:p-12">
       <div className="mx-auto max-w-7xl">
         <motion.h1
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45 }}
-          className="mb-8 text-3xl font-extrabold text-center text-indigo-600"
+          className="mb-8 text-3xl font-extrabold text-center text-white"
         >
           Support Plans
         </motion.h1>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
           {plans.map((plan) => (
-            <div key={plan.type} className="rounded-2xl border border-neutral-100 bg-white p-6 shadow-sm">
-              <h2 className="text-xl font-semibold text-neutral-800">{plan.type}</h2>
-              <p className="mt-1 text-sm text-neutral-600">Duration: {plan.duration}</p>
-              <p className="mt-1 text-sm font-semibold text-indigo-600">Cost: ₹{plan.cost}</p>
+            <div key={plan.type} className="rounded-2xl border border-white/10 bg-slate-900/70 p-6 shadow-lg hover:shadow-cyan-500/20 transition-all duration-300">
+              <h2 className="text-xl font-semibold text-white">{plan.type}</h2>
+              <p className="mt-1 text-sm text-slate-400">Duration: {plan.duration}</p>
+              <p className="mt-1 text-sm font-semibold text-teal-300">Cost: ₹{plan.cost}</p>
 
-              <ul className="mt-4 space-y-2 text-sm text-neutral-700">
+              <ul className="mt-4 space-y-2 text-sm text-slate-300">
                 {plan.includes.map((item, idx) => (
                   <li key={idx} className="flex items-start gap-2">
                     <CheckCircle size={16} className="mt-1 text-green-500" />
@@ -77,7 +77,7 @@ export default function PlansPage() {
               </ul>
               <Link
                 href="mailto:bytesflareinfotechsales@gmail.com"
-                className="mt-4 inline-block rounded-2xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow hover:bg-indigo-700"
+                className="mt-4 inline-block rounded-2xl bg-gradient-to-r from-teal-500 to-cyan-500 px-5 py-3 text-sm font-semibold text-white shadow hover:opacity-90"
               >
                 Contact Sales
               </Link>
