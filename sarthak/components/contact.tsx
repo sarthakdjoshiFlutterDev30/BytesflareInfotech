@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Mail, Phone, Clock, Send, CheckCircle2 } from 'lucide-react';
+import { Mail, Phone, Clock, Send, CheckCircle2, Loader2 } from 'lucide-react';
 
 export function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -11,6 +11,8 @@ export function Contact() {
   const [statusMessage, setStatusMessage] = useState("");
   const [showSentAnimation, setShowSentAnimation] = useState(false);
   const [showConfirmationAnimation, setShowConfirmationAnimation] = useState(false);
+  
+  // Refs for cleanup
   const sentAnimationTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const confirmationAnimationTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -23,19 +25,27 @@ export function Contact() {
     message: "",
   });
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+  function handleChange(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   }
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsSubmitting(true);
     setStatusMessage("");
     setShowSentAnimation(false);
-    if (sentAnimationTimeout.current) {
-      clearTimeout(sentAnimationTimeout.current);
-      sentAnimationTimeout.current = null;
+
+    // Clear any existing timeouts
+    if (sentAnimationTimeout.current) clearTimeout(sentAnimationTimeout.current);
+
+    const requiredFields: (keyof typeof formData)[] = ['name', 'email', 'phone', 'projectType', 'budget', 'message'];
+    const hasEmptyFields = requiredFields.some((field) => !formData[field].trim());
+
+    if (hasEmptyFields) {
+      setStatusMessage("❌ Please fill out all fields before sending.");
+      setIsSubmitting(false);
+      return;
     }
 
     try {
@@ -48,52 +58,58 @@ export function Contact() {
       });
 
       if (response.ok) {
+        // Success Sequence
         setShowSentAnimation(true);
         sentAnimationTimeout.current = setTimeout(() => {
           setShowSentAnimation(false);
           setSubmitted(true);
+          // Reset form data
+          setFormData({
+            name: "",
+            email: "",
+            phone: "",
+            projectType: "",
+            budget: "",
+            message: "",
+          });
         }, 1500);
         setStatusMessage("✅ Message sent successfully!");
-        setFormData({
-          name: "",
-          email: "",
-          phone: "",
-          projectType: "",
-          budget: "",
-          message: "",
-        });
       } else {
-        const errorData = await response.json();
-        setStatusMessage(`❌ Failed: ${errorData.message || "Please try again."}`);
-        console.log(errorData)
+        // Safe Error Parsing
+        let errorMsg = "Please try again.";
+        try {
+          const errorData = await response.json();
+          errorMsg = errorData.message || errorMsg;
+        } catch (e) {
+          console.error("Non-JSON response received");
+        }
+        setStatusMessage(`❌ Failed: ${errorMsg}`);
       }
     } catch (err) {
       console.error(err);
-      setStatusMessage("❌ Failed to send. Please try again.");
+      setStatusMessage("❌ Network error. Please check your connection.");
     } finally {
+      // Small delay to ensure animations feel smooth
       setTimeout(() => {
         setIsSubmitting(false);
       }, 150);
     }
   }
 
+  // Cleanup timeouts on unmount
   useEffect(() => {
     return () => {
-      if (sentAnimationTimeout.current) {
-        clearTimeout(sentAnimationTimeout.current);
-      }
-      if (confirmationAnimationTimeout.current) {
-        clearTimeout(confirmationAnimationTimeout.current);
-      }
+      if (sentAnimationTimeout.current) clearTimeout(sentAnimationTimeout.current);
+      if (confirmationAnimationTimeout.current) clearTimeout(confirmationAnimationTimeout.current);
     };
   }, []);
 
+  // Handle post-submission confirmation animation
   useEffect(() => {
     if (submitted) {
       setShowConfirmationAnimation(true);
-      if (confirmationAnimationTimeout.current) {
-        clearTimeout(confirmationAnimationTimeout.current);
-      }
+      if (confirmationAnimationTimeout.current) clearTimeout(confirmationAnimationTimeout.current);
+      
       confirmationAnimationTimeout.current = setTimeout(() => {
         setShowConfirmationAnimation(false);
       }, 2800);
@@ -120,8 +136,9 @@ export function Contact() {
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-8">Let&rsquo;s Start a Conversation</h2>
 
             <div className="space-y-4 mb-10">
+              {/* Email Card */}
               <div className="group p-6 bg-slate-900/70 rounded-xl border border-white/10 shadow-lg flex gap-4 items-start transition-all duration-300 hover:-translate-y-1 hover:border-cyan-400/40">
-                <div className="relative">
+                <div className="relative shrink-0">
                   <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-teal-400 via-cyan-400 to-blue-500 opacity-60 blur-md group-hover:opacity-80 transition-opacity"></div>
                   <div className="relative h-12 w-12 rounded-2xl bg-slate-950/80 border border-white/10 flex items-center justify-center shadow-lg shadow-cyan-500/30">
                     <Mail className="h-6 w-6 text-cyan-200" />
@@ -131,7 +148,7 @@ export function Contact() {
                   <p className="text-sm font-semibold text-slate-100">Email</p>
                   <a
                     href="mailto:bytesflareinfotechsales@gmail.com"
-                    className="text-white font-medium hover:text-cyan-200 transition-colors"
+                    className="text-white font-medium hover:text-cyan-200 transition-colors break-all"
                   >
                     bytesflareinfotechsales@gmail.com
                   </a>
@@ -139,8 +156,9 @@ export function Contact() {
                 </div>
               </div>
 
+              {/* Phone Card */}
               <div className="group p-6 bg-slate-900/70 rounded-xl border border-white/10 shadow-lg flex gap-4 items-start transition-all duration-300 hover:-translate-y-1 hover:border-cyan-400/40">
-                <div className="relative">
+                <div className="relative shrink-0">
                   <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-amber-400 via-orange-400 to-pink-500 opacity-60 blur-md group-hover:opacity-80 transition-opacity"></div>
                   <div className="relative h-12 w-12 rounded-2xl bg-slate-950/80 border border-white/10 flex items-center justify-center shadow-lg shadow-amber-500/30">
                     <Phone className="h-6 w-6 text-amber-200" />
@@ -161,8 +179,9 @@ export function Contact() {
                 </div>
               </div>
 
+              {/* Hours Card */}
               <div className="group p-6 bg-slate-900/70 rounded-xl border border-white/10 shadow-lg flex gap-4 items-start transition-all duration-300 hover:-translate-y-1 hover:border-cyan-400/40">
-                <div className="relative">
+                <div className="relative shrink-0">
                   <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-violet-400 via-indigo-400 to-blue-500 opacity-60 blur-md group-hover:opacity-80 transition-opacity"></div>
                   <div className="relative h-12 w-12 rounded-2xl bg-slate-950/80 border border-white/10 flex items-center justify-center shadow-lg shadow-indigo-500/30">
                     <Clock className="h-6 w-6 text-indigo-200" />
@@ -179,23 +198,27 @@ export function Contact() {
             <div>
               <h3 className="text-xl font-semibold text-white mb-4">Why Work With Us?</h3>
               <ul className="space-y-3 text-slate-300">
-                <li className="flex items-start gap-3"><span className="mt-2 h-2 w-2 rounded-sm bg-amber-500" />Free consultation and project analysis</li>
-                <li className="flex items-start gap-3"><span className="mt-2 h-2 w-2 rounded-sm bg-amber-500" />Transparent pricing and timeline</li>
-                <li className="flex items-start gap-3"><span className="mt-2 h-2 w-2 rounded-sm bg-amber-500" />Ongoing support and maintenance</li>
+                <li className="flex items-start gap-3"><span className="mt-2 h-2 w-2 rounded-sm bg-amber-500 shrink-0" />Free consultation and project analysis</li>
+                <li className="flex items-start gap-3"><span className="mt-2 h-2 w-2 rounded-sm bg-amber-500 shrink-0" />Transparent pricing and timeline</li>
+                <li className="flex items-start gap-3"><span className="mt-2 h-2 w-2 rounded-sm bg-amber-500 shrink-0" />Ongoing support and maintenance</li>
               </ul>
             </div>
           </div>
 
           {/* Right: Form */}
-          <div>
-            <h3 className="text-2xl font-semibold text-white mb-4">Send Us a Message</h3>
+          <div className="w-full">
+            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 mb-4">
+              <h3 className="text-2xl font-semibold text-white">Send Us a Message</h3>
+              <p className="text-sm text-slate-400">All fields are mandatory</p>
+            </div>
+            
             {submitted ? (
-              <div className="relative overflow-hidden p-6 bg-gradient-to-br from-slate-900/90 via-slate-900 to-slate-950 rounded-2xl border border-white/10 shadow-lg shadow-teal-900/40">
+              <div className="relative overflow-hidden p-6 bg-gradient-to-br from-slate-900/90 via-slate-900 to-slate-950 rounded-2xl border border-white/10 shadow-lg shadow-teal-900/40 animate-in fade-in zoom-in duration-500">
                 <div className="absolute -top-10 -right-10 h-24 w-24 rounded-full bg-teal-500/30 blur-3xl animate-pulse"></div>
                 <div className="absolute -bottom-12 -left-6 h-20 w-20 rounded-full bg-cyan-500/30 blur-3xl animate-pulse delay-150"></div>
                 <div className="relative">
                   <div className="flex items-center gap-4">
-                    <div className="relative h-16 w-16 flex items-center justify-center">
+                    <div className="relative h-16 w-16 flex items-center justify-center shrink-0">
                       {showConfirmationAnimation && (
                         <>
                           <span className="absolute inset-0 rounded-full border border-teal-200/50 animate-ping"></span>
@@ -212,41 +235,80 @@ export function Contact() {
                     </div>
                   </div>
                   {showConfirmationAnimation && (
-                    <div className="mt-6 flex gap-2">
+                    <div className="mt-6 flex gap-2 justify-center sm:justify-start">
                       <span className="h-2 w-2 rounded-full bg-teal-300 animate-bounce"></span>
                       <span className="h-2 w-2 rounded-full bg-cyan-300 animate-bounce delay-100"></span>
                       <span className="h-2 w-2 rounded-full bg-blue-300 animate-bounce delay-200"></span>
                       <span className="h-2 w-2 rounded-full bg-teal-300 animate-bounce delay-300"></span>
                     </div>
                   )}
+                  
+                  {/* Option to send another message */}
+                  <div className="mt-8">
+                     <Button 
+                       onClick={() => setSubmitted(false)}
+                       variant="outline"
+                       className="border-white/20 text-slate-300 hover:bg-white/5 hover:text-white"
+                     >
+                       Send another message
+                     </Button>
+                  </div>
                 </div>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="p-6 bg-slate-900/70 rounded-xl border border-white/10 shadow-lg space-y-4">
-                <div className="grid md:grid-cols-2 gap-4">
+              <form onSubmit={handleSubmit} className="p-6 bg-slate-900/70 rounded-xl border border-white/10 shadow-lg space-y-5">
+                <div className="grid md:grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-1">Full Name *</label>
-                    <Input name="name" value={formData.name} onChange={handleChange} placeholder="Your full name" required className="bg-slate-950 border-white/10 text-white placeholder:text-slate-500" />
+                    <label className="block text-sm font-semibold text-slate-200 mb-1.5">Full Name *</label>
+                    <Input 
+                      name="name" 
+                      value={formData.name} 
+                      onChange={handleChange} 
+                      placeholder="Your full name" 
+                      required 
+                      className="bg-slate-950 border-white/20 text-white placeholder:text-slate-500 focus:border-cyan-400/50 text-base md:text-sm" 
+                    />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-1">Phone Number (Optional)</label>
-                    <Input name="phone" value={formData.phone} onChange={handleChange} placeholder="+91 XXXXX XXXXX" className="bg-slate-950 border-white/10 text-white placeholder:text-slate-500" />
+                    <label className="block text-sm font-semibold text-slate-200 mb-1.5">Phone Number *</label>
+                    <Input
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      placeholder="+91 XXXXX XXXXX"
+                      required
+                      className="bg-slate-950 border-white/20 text-white placeholder:text-slate-500 focus:border-cyan-400/50 text-base md:text-sm"
+                    />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">Email Address *</label>
-                  <Input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="your.email@example.com" required className="bg-slate-950 border-white/10 text-white placeholder:text-slate-500" />
+                  <label className="block text-sm font-semibold text-slate-200 mb-1.5">Email Address *</label>
+                  <Input 
+                    type="email" 
+                    name="email" 
+                    value={formData.email} 
+                    onChange={handleChange} 
+                    placeholder="your.email@example.com" 
+                    required 
+                    className="bg-slate-950 border-white/20 text-white placeholder:text-slate-500 focus:border-cyan-400/50 text-base md:text-sm" 
+                  />
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid md:grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-1">Project Type</label>
-                    <Select value={formData.projectType} onValueChange={(v) => setFormData((p) => ({ ...p, projectType: v }))}>
-                      <SelectTrigger className="bg-slate-950 border-white/10 text-white">
+                    <label className="block text-sm font-semibold text-slate-200 mb-1.5">Project Type *</label>
+                    <Select
+                      value={formData.projectType}
+                      onValueChange={(v) => setFormData((p) => ({ ...p, projectType: v }))}
+                    >
+                      <SelectTrigger className="bg-slate-950 border-white/20 text-white w-full focus:ring-cyan-400/20 text-base md:text-sm">
                         <SelectValue placeholder="Select project type" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent
+                        position="popper"
+                        className="bg-slate-950 border border-white/10 text-white shadow-xl shadow-slate-900/50 max-h-60 overflow-y-auto z-50"
+                      >
                         <SelectItem value="Mobile App Development">Mobile App</SelectItem>
                         <SelectItem value="Web Development">Web App / Website</SelectItem>
                         <SelectItem value="ERP Solution">ERP / Internal Tools</SelectItem>
@@ -255,12 +317,18 @@ export function Contact() {
                     </Select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-1">Project Budget</label>
-                    <Select value={formData.budget} onValueChange={(v) => setFormData((p) => ({ ...p, budget: v }))}>
-                      <SelectTrigger className="bg-slate-950 border-white/10 text-white">
+                    <label className="block text-sm font-semibold text-slate-200 mb-1.5">Project Budget *</label>
+                    <Select
+                      value={formData.budget}
+                      onValueChange={(v) => setFormData((p) => ({ ...p, budget: v }))}
+                    >
+                      <SelectTrigger className="bg-slate-950 border-white/20 text-white w-full focus:ring-cyan-400/20 text-base md:text-sm">
                         <SelectValue placeholder="Select budget range" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent
+                        position="popper"
+                        className="bg-slate-950 border border-white/10 text-white shadow-xl shadow-slate-900/50 max-h-60 overflow-y-auto z-50"
+                      >
                         <SelectItem value="₹10,000 - ₹20,000">₹10,000 - ₹20,000</SelectItem>
                         <SelectItem value="₹20,000 - ₹30,000">₹20,000 - ₹30,000</SelectItem>
                         <SelectItem value="₹30,000 - ₹40,000">₹30,000 - ₹40,000</SelectItem>
@@ -272,37 +340,58 @@ export function Contact() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">Project Description *</label>
-                  <Textarea name="message" value={formData.message} onChange={handleChange} placeholder="Tell us about your project requirements..." required rows={6} className="bg-slate-950 border-white/10 text-white placeholder:text-slate-500" />
+                  <label className="block text-sm font-semibold text-slate-200 mb-1.5">Project Description *</label>
+                  <Textarea 
+                    name="message" 
+                    value={formData.message} 
+                    onChange={handleChange} 
+                    placeholder="Tell us about your project requirements..." 
+                    required 
+                    rows={6} 
+                    className="bg-slate-950 border-white/20 text-white placeholder:text-slate-500 focus:border-cyan-400/50 resize-none text-base md:text-sm" 
+                  />
                 </div>
 
-                <div className="relative">
+                <div className="relative pt-2">
                   <Button
                     type="submit"
                     disabled={isSubmitting || showSentAnimation}
-                    className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:opacity-90 text-white disabled:opacity-70 disabled:cursor-not-allowed"
+                    className="w-full h-12 bg-gradient-to-r from-teal-500 to-cyan-500 hover:opacity-90 text-white font-semibold disabled:opacity-70 disabled:cursor-not-allowed transition-all"
                   >
-                    {isSubmitting ? 'Sending…' : (
-                      <span className="inline-flex items-center gap-2"><Send className="h-4 w-4" /> Send Message</span>
+                    {isSubmitting ? (
+                       <span className="inline-flex items-center gap-2">
+                         <Loader2 className="h-5 w-5 animate-spin" /> Sending...
+                       </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-2">
+                        <Send className="h-5 w-5" /> Send Message
+                      </span>
                     )}
                   </Button>
+                  
+                  {/* Success Animation Overlay */}
                   {showSentAnimation && (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none bg-slate-900/80 rounded-md backdrop-blur-sm z-10">
                       <div className="relative flex items-center justify-center">
                         <span className="absolute inline-flex h-12 w-12 rounded-full border border-teal-200/40 animate-ping"></span>
                         <span className="absolute inline-flex h-16 w-16 rounded-full border border-cyan-200/30 animate-pulse"></span>
-                        <Send className="relative h-6 w-6 text-white animate-bounce" />
+                        <Send className="relative h-8 w-8 text-cyan-400 animate-bounce" />
                       </div>
                       <p className="mt-3 text-sm font-semibold text-teal-100 tracking-wide animate-pulse">Message Sent!</p>
                     </div>
                   )}
                 </div>
-                {statusMessage && <p className="text-center text-sm mt-2 text-slate-200">{statusMessage}</p>}
+                
+                {statusMessage && (
+                  <div className={`p-3 rounded-md text-center text-sm font-medium animate-in fade-in slide-in-from-top-1 ${statusMessage.includes("❌") ? "bg-red-500/10 text-red-200 border border-red-500/20" : "bg-teal-500/10 text-teal-200 border border-teal-500/20"}`}>
+                    {statusMessage}
+                  </div>
+                )}
               </form>
             )}
           </div>
         </div>
       </div>
     </section>
-  );
+      );
 }
