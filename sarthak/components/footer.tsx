@@ -65,13 +65,26 @@ export function Footer() {
             <h3 className="font-bold text-lg mb-6">Get In Touch</h3>
             <ul className="space-y-4">
               <li className="flex items-center space-x-3">
-                <Mail className="w-5 h-5 text-teal-00" />
-                <span className="text-slate-300">bytesflareinfotechsales@gmail.com</span>
+                <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-yellow-400/20 via-amber-400/10 to-transparent border border-yellow-400/40 shadow-[0_0_15px_rgba(251,191,36,0.25)]">
+                  <Mail className="w-5 h-5 text-yellow-300" strokeWidth={1.75} />
+                </span>
+                <a href="mailto:bytesflareinfotechsales@gmail.com" className="text-slate-300 hover:text-yellow-300 transition-colors">
+                  bytesflareinfotechsales@gmail.com
+                </a>
               </li>
-             
               <li className="flex items-center space-x-3">
-                <MapPin className="w-5 h-5 text-teal-400" />
-                <span className="text-slate-300">Gujrat,India</span>
+                <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-slate-800/80 border border-white/10 shadow-inner shadow-amber-500/20">
+                  <Phone className="w-5 h-5 text-amber-200" />
+                </span>
+                <a href="tel:+918799196162" className="text-slate-300 hover:text-amber-200 transition-colors">
+                  +91-8799196162
+                </a>
+              </li>
+              <li className="flex items-center space-x-3">
+                <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-slate-800/80 border border-white/10 shadow-inner shadow-teal-500/20">
+                  <MapPin className="w-5 h-5 text-teal-300" />
+                </span>
+                <span className="text-slate-300">Gujarat, India</span>
               </li>
             </ul>
           </div>
