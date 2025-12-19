@@ -5,44 +5,54 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 
 const faqs = [
   {
-    question: 'What types of projects do you specialize in?',
-    answer: 'We specialize in web development, mobile app development, ERP solutions, and API integrations. Our expertise spans across e-commerce platforms, enterprise applications, custom software solutions, and digital transformation projects for businesses of all sizes.'
+    question: 'What does Bytesflare Infotech specialize in?',
+    answer:
+      'Bytesflare Infotech is a product-focused technology company building scalable mobile-first SaaS platforms using Flutter and Firebase. Our primary focus is real-time systems such as attendance management, ERP platforms, workforce tracking, and institutional digital solutions.'
   },
   {
-    question: 'How long does a typical project take?',
-    answer: 'Project timelines vary based on complexity and scope. Simple websites typically take 4-6 weeks, while complex web applications or ERP systems can take 3-6 months. We provide detailed timelines during our initial consultation and keep you updated throughout the development process.'
+    question: 'What kind of products do you build?',
+    answer:
+      'We build secure, cloud-based products including attendance systems, ERP modules, student and workforce management platforms, and custom enterprise applications. Our flagship product, BytesAttend, is designed for institutions and organizations that need real-time, reliable attendance and session tracking.'
   },
   {
-    question: 'Do you provide ongoing support and maintenance?',
-    answer: 'Yes, we offer comprehensive support and maintenance packages. This includes regular updates, security patches, performance monitoring, bug fixes, and feature enhancements. We also provide 24/7 monitoring for critical business applications.'
+    question: 'Which technologies do you use?',
+    answer:
+      'We intentionally use a focused technology stack consisting only of Flutter for frontend development and Firebase for backend, database, authentication, and real-time infrastructure. This allows us to deliver faster, more reliable, and highly scalable products.'
   },
   {
-    question: 'What is your development process?',
-    answer: 'We follow an agile development methodology with five key phases: Discovery & Analysis, Strategy & Planning, Development & Testing, Launch & Deployment, and ongoing Support & Optimization. This ensures transparency, regular communication, and high-quality deliverables.'
+    question: 'Why do you use only Flutter and Firebase?',
+    answer:
+      'By standardizing on Flutter and Firebase, we ensure consistency, performance, security, and faster development cycles. This focused stack enables real-time synchronization, offline support, strong security rules, and seamless scalability for thousands of users.'
   },
   {
-    question: 'Can you work with our existing systems?',
-    answer: 'Absolutely! We have extensive experience integrating with existing systems, databases, and third-party services. We can modernize legacy systems, create APIs for system integration, and ensure seamless data migration without disrupting your current operations.'
+    question: 'Is BytesAttend customizable for institutions or companies?',
+    answer:
+      'Yes. BytesAttend is designed as a modular product. Institutions and organizations can configure roles, permissions, attendance rules, session logic, and reporting without changing the core system.'
   },
   {
-    question: 'What technologies do you use?',
-    answer: 'We use modern, industry-standard technologies including React, Next.js, Node.js, Python, cloud platforms (AWS, Azure, Google Cloud), and various databases. We select the best technology stack based on your specific requirements and long-term goals.'
+    question: 'Do you provide long-term support and updates?',
+    answer:
+      'Absolutely. We provide continuous product updates, performance improvements, security enhancements, and feature upgrades. Our systems are monitored and improved regularly to ensure reliability and long-term value.'
   },
   {
-    question: 'How do you ensure project security?',
-    answer: 'Security is our top priority. We implement enterprise-grade security measures including encryption, secure authentication, regular security audits, and compliance with standards like GDPR, HIPAA, and SOC 2. All code undergoes thorough security reviews.'
+    question: 'How secure are your products?',
+    answer:
+      'Security is built into our architecture. We use Firebase Authentication, role-based access control, Firestore security rules, encrypted data storage, and audit-friendly data structures to ensure enterprise-grade protection.'
   },
   {
-    question: 'What are your pricing models?',
-    answer: 'We offer flexible pricing models including fixed-price projects, time and materials, and retainer agreements. Pricing depends on project scope, complexity, and timeline. We provide detailed quotes after understanding your requirements during our free consultation.'
+    question: 'Can your products scale for large institutions?',
+    answer:
+      'Yes. Our Flutter + Firebase architecture is designed to scale seamlessly from small teams to large institutions with thousands of concurrent users, real-time updates, and minimal latency.'
   },
   {
-    question: 'Do you work with international clients?',
-    answer: 'Yes, we work with clients globally. We have experience managing projects across different time zones and have established communication processes to ensure smooth collaboration regardless of location.'
+    question: 'Do you offer demos or pilot deployments?',
+    answer:
+      'Yes. We provide product demos and pilot deployments for institutions and organizations interested in evaluating BytesAttend or our upcoming platforms before full adoption.'
   },
   {
-    question: 'How do you handle project communication?',
-    answer: 'We maintain transparent communication through regular updates, scheduled meetings, project management tools, and dedicated project managers. You\'ll have real-time access to project progress and can communicate with our team whenever needed.'
+    question: 'Is Bytesflare Infotech a service company or product company?',
+    answer:
+      'Bytesflare Infotech is a product-driven company. Our primary focus is building, scaling, and continuously improving our own SaaS products rather than offering generic development services.'
   }
 ];
 
@@ -50,9 +60,9 @@ export function FAQ() {
   const [openItems, setOpenItems] = useState<number[]>([]);
 
   const toggleItem = (index: number) => {
-    setOpenItems(prev => 
-      prev.includes(index) 
-        ? prev.filter(item => item !== index)
+    setOpenItems((prev) =>
+      prev.includes(index)
+        ? prev.filter((item) => item !== index)
         : [...prev, index]
     );
   };
@@ -62,10 +72,14 @@ export function FAQ() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
-            Frequently Asked <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-purple-500">Questions</span>
+            Frequently Asked{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-purple-500">
+              Questions
+            </span>
           </h2>
           <p className="text-xl text-slate-300 max-w-2xl mx-auto">
-            Get answers to common questions about our services, process, and how we can help your business grow.
+            Everything you need to know about Bytesflare Infotech and our
+            Flutter-powered SaaS products.
           </p>
         </div>
 
@@ -88,7 +102,7 @@ export function FAQ() {
                   <ChevronDown className="w-6 h-6 text-slate-500 flex-shrink-0" />
                 )}
               </button>
-              
+
               {openItems.includes(index) && (
                 <div className="px-8 pb-6">
                   <div className="border-t border-white/10 pt-4">
@@ -101,7 +115,7 @@ export function FAQ() {
             </div>
           ))}
         </div>
-         </div>
+      </div>
     </section>
   );
 }

@@ -7,169 +7,162 @@ import { Button } from '@/components/ui/button';
 
 const projects = [
   {
-    title: "College Management System",
-    category: "ERP Solution",
-    description: "Comprehensive management system for educational institutions with separate portals for students, teachers, and administrators. Features include attendance tracking, grade management, and real-time communication.",
-    technologies: ["Flutter", "Firebase", "Node.js", "React.js"],
-    features: ["Student Portal", "Teacher Dashboard", "Admin Panel", "Real-time Analytics"],
-    status: "Live Project",
-    client: "EduTech Solutions",
-    challenge: "Multiple disconnected portals, manual attendance, and grade tracking inefficiencies.",
-    solution: "Developed a unified management system with separate student, teacher, and admin portals using Flutter and Firebase.",
-    results: [
-      "Streamlined attendance and grade management",
-      "Real-time notifications for teachers and students",
-      "Centralized data storage reducing errors"
+    title: "BytesAttend Platform",
+    category: "Attendance & Verification SaaS",
+    description:
+      "A cloud-based attendance and verification platform designed to eliminate proxy attendance and manual tracking through digital-first workflows.",
+    technologies: ["Flutter", "Firebase", "Cloud Functions", "Dashboard UI"],
+    features: [
+      "QR-based attendance",
+      "Session verification",
+      "Real-time reports",
+      "Role-based access",
     ],
-    image: "https://images.pexels.com/photos/1181675/pexels-photo-1181675.jpeg?auto=compress&cs=tinysrgb&w=600&h=400",
-    tags: ["Flutter", "Firebase", "Node.js", "React.js"]
+    status: "Live Platform",
+    challenge:
+      "Manual attendance systems causing inaccuracies, proxy entries, and lack of centralized records.",
+    solution:
+      "Developed a secure QR-based attendance platform with real-time verification and centralized cloud reporting.",
+    results: [
+      "Near-zero proxy attendance",
+      "Real-time attendance visibility",
+      "Centralized and auditable records",
+    ],
+    image:
+      "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=600&h=400",
+    tags: ["BytesAttend", "SaaS", "Attendance"],
   },
   {
-    title: "E-commerce Mobile App",
-    category: "Mobile Application",
-    description: "Full-featured e-commerce platform with user and admin applications. Includes product catalog, shopping cart, payment integration, and order management system.",
-    technologies: ["Flutter", "Firebase", "Stripe API", "Admin Web Portal"],
-    features: ["Shopping Cart", "Payment Gateway", "Order Tracking", "Admin Dashboard"],
-    status: "Recently Delivered",
-    client: "RetailTech Solutions",
-    challenge: "Legacy system causing 40% cart abandonment, slow load times, and poor mobile experience.",
-    solution: "Built modern React-based platform with Next.js, integrated payment systems, and mobile-first design.",
-    results: [
-      "65% reduction in cart abandonment",
-      "3x faster page load times",
-      "250% increase in mobile conversions"
+    title: "Digital Operations Platform",
+    category: "Enterprise Automation",
+    description:
+      "A backend-driven operations platform built to manage users, roles, workflows, and data securely at scale.",
+    technologies: ["Node.js", "MongoDB", "Cloud APIs"],
+    features: [
+      "Role-based access",
+      "Workflow automation",
+      "Secure data storage",
+      "Scalable architecture",
     ],
-    image: "https://images.pexels.com/photos/230544/pexels-photo-230544.jpeg?auto=compress&cs=tinysrgb&w=600&h=400",
-    tags: ["Next.js", "E-commerce", "Mobile-First"]
+    status: "Active Deployment",
+    challenge:
+      "Fragmented systems and manual workflows leading to operational inefficiencies.",
+    solution:
+      "Designed a centralized operations platform with automated workflows and secure access controls.",
+    results: [
+      "Improved operational efficiency",
+      "Reduced manual intervention",
+      "Scalable system architecture",
+    ],
+    image:
+      "https://images.pexels.com/photos/669615/pexels-photo-669615.jpeg?auto=compress&cs=tinysrgb&w=600&h=400",
+    tags: ["Automation", "Cloud", "Scalable"],
   },
   {
-    title: "Real-time Chat Application",
-    category: "Communication Platform",
-    description: "Modern chat application with real-time messaging, video calls, file sharing, and group chat functionality. Built for seamless communication across devices.",
-    technologies: ["React Native", "Node.js", "Socket.io", "WebRTC"],
-    features: ["Real-time Messaging", "Video Calls", "File Sharing", "Group Chats"],
-    status: "In Development",
-    client: "ChatCorp Solutions",
-    challenge: "Outdated messaging system with poor user engagement and lack of multimedia support.",
-    solution: "Developed a real-time chat app with video calls, file sharing, and group chats using React Native and Socket.io.",
-    results: [
-      "Seamless cross-device messaging",
-      "Improved user engagement by 200%",
-      "Added video call and file sharing features"
+    title: "Real-Time Communication Module",
+    category: "Platform Capability",
+    description:
+      "A real-time communication layer enabling instant notifications, messaging, and activity tracking across platforms.",
+    technologies: ["WebSockets", "Firebase", "Cloud Messaging"],
+    features: [
+      "Instant notifications",
+      "Activity logs",
+      "Live updates",
+      "Scalable messaging",
     ],
-    image: "https://images.pexels.com/photos/3184309/pexels-photo-3184309.jpeg?auto=compress&cs=tinysrgb&w=600&h=400",
-    tags: ["React Native", "Node.js", "Socket.io", "WebRTC"]
+    status: "Integrated Module",
+    challenge:
+      "Delayed communication and lack of real-time system feedback.",
+    solution:
+      "Implemented a real-time messaging and notification layer integrated directly into the platform.",
+    results: [
+      "Instant system updates",
+      "Improved user responsiveness",
+      "Higher engagement levels",
+    ],
+    image:
+      "https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=600&h=400",
+    tags: ["Realtime", "Messaging", "Cloud"],
   },
   {
-    title: "Business Analytics Dashboard",
-    category: "Web Application",
-    description: "Comprehensive analytics dashboard providing real-time business insights, KPI tracking, and data visualization for informed decision-making.",
-    technologies: ["React.js", "D3.js", "Node.js", "MongoDB"],
-    features: ["Real-time Analytics", "Custom Reports", "Data Visualization", "Export Tools"],
-    status: "Completed",
-    client: "BizInsights Ltd.",
-    challenge: "Manual report generation, lack of real-time insights, and fragmented data sources.",
-    solution: "Built a React.js dashboard with D3.js visualizations, integrating multiple data sources for real-time insights.",
-    results: [
-      "Real-time analytics for faster decision making",
-      "Automated report generation saving hours of manual work",
-      "Interactive data visualizations"
+    title: "Analytics & Reporting Engine",
+    category: "Data & Insights",
+    description:
+      "A built-in analytics engine providing real-time insights, usage metrics, and operational performance data.",
+    technologies: ["Charts", "Cloud Analytics", "Dashboard UI"],
+    features: [
+      "Live dashboards",
+      "Exportable reports",
+      "Usage analytics",
+      "Performance metrics",
     ],
-    image: "https://images.pexels.com/photos/669610/pexels-photo-669610.jpeg?auto=compress&cs=tinysrgb&w=600&h=400",
-    tags: ["React.js", "D3.js", "Node.js", "MongoDB"]
+    status: "Live Feature",
+    challenge:
+      "Lack of visibility into system usage and operational performance.",
+    solution:
+      "Built an analytics layer with real-time dashboards and automated reporting.",
+    results: [
+      "Data-driven decision making",
+      "Operational transparency",
+      "Faster insights",
+    ],
+    image:
+      "https://images.pexels.com/photos/590020/pexels-photo-590020.jpeg?auto=compress&cs=tinysrgb&w=600&h=400",
+    tags: ["Analytics", "Insights", "Reports"],
   },
   {
-    title: "Restaurant Management System",
-    category: "POS Solution",
-    description: "Complete restaurant management solution with POS system, inventory management, and customer relationship management features.",
-    technologies: ["Flutter", "Firebase", "Payment APIs", "Web Portal"],
-    features: ["POS System", "Inventory Management", "Customer Management", "Sales Analytics"],
-    status: "Live Project",
-    client: "Foodies Tech",
-    challenge: "Manual order processing, inventory tracking errors, and poor customer management.",
-    solution: "Developed an integrated POS system with inventory and customer management modules using Flutter and Firebase.",
-    results: [
-      "Reduced order processing time by 50%",
-      "Accurate inventory tracking",
-      "Enhanced customer relationship management"
+    title: "Security & Identity Layer",
+    category: "Platform Security",
+    description:
+      "A security-first identity and access layer ensuring data protection, authentication, and controlled access.",
+    technologies: ["Auth Systems", "Encryption", "Cloud Security"],
+    features: [
+      "Secure authentication",
+      "Role-based permissions",
+      "Encrypted data",
+      "Audit logs",
     ],
-    image: "https://images.pexels.com/photos/704569/pexels-photo-704569.jpeg?auto=compress&cs=tinysrgb&w=600&h=400",
-    tags: ["Flutter", "Firebase", "POS", "Inventory Management"]
+    status: "Core Infrastructure",
+    challenge:
+      "Unauthorized access risks and lack of traceability.",
+    solution:
+      "Implemented a robust identity and access management system with full audit logging.",
+    results: [
+      "Improved platform security",
+      "Controlled access",
+      "Full traceability",
+    ],
+    image:
+      "https://images.pexels.com/photos/5380642/pexels-photo-5380642.jpeg?auto=compress&cs=tinysrgb&w=600&h=400",
+    tags: ["Security", "IAM", "Compliance"],
   },
   {
-    title: "Healthcare Management App",
-    category: "Healthcare Solution",
-    description: "Digital healthcare platform connecting patients with healthcare providers, featuring appointment scheduling, medical records, and telemedicine capabilities.",
-    technologies: ["Flutter", "Node.js", "MongoDB", "Video Call API"],
-    features: ["Appointment Booking", "Medical Records", "Telemedicine", "Prescription Management"],
-    status: "Recently Delivered",
-    client: "HealthConnect",
-    challenge: "Inefficient appointment management, fragmented medical records, and limited telemedicine support.",
-    solution: "Developed a Flutter-based healthcare app connecting patients and doctors with telemedicine and record management.",
-    results: [
-      "Simplified appointment scheduling",
-      "Centralized medical records",
-      "Enabled telemedicine consultations"
+    title: "Scalable SaaS Infrastructure",
+    category: "Cloud Architecture",
+    description:
+      "A cloud-native infrastructure designed to scale seamlessly with growing users and data.",
+    technologies: ["Cloud Hosting", "Serverless", "Monitoring"],
+    features: [
+      "High availability",
+      "Auto-scaling",
+      "Monitoring & logs",
+      "Disaster recovery",
     ],
-    image: "https://images.pexels.com/photos/40568/medical-appointment-doctor-healthcare-40568.jpeg?auto=compress&cs=tinysrgb&w=600&h=400",
-    tags: ["Flutter", "Node.js", "MongoDB", "Telemedicine"]
+    status: "Production Ready",
+    challenge:
+      "Handling growth without compromising performance or reliability.",
+    solution:
+      "Designed a cloud-native, scalable SaaS infrastructure with continuous monitoring.",
+    results: [
+      "99.9% uptime",
+      "Reliable performance",
+      "Scalable growth",
+    ],
+    image:
+      "https://images.pexels.com/photos/325229/pexels-photo-325229.jpeg?auto=compress&cs=tinysrgb&w=600&h=400",
+    tags: ["Cloud", "SaaS", "Scalable"],
   },
-  {
-    title: "Fintech Mobile Wallet",
-    category: "Finance Solution",
-    description: "Secure digital wallet for transactions, bill payments, and peer-to-peer transfers with KYC integration.",
-    technologies: ["Flutter", "Firebase", "Razorpay", "Node.js"],
-    features: ["Wallet Recharge", "KYC Verification", "Bill Payments", "Transaction History"],
-    status: "In Development",
-    client: "FinanceFirst Bank",
-    challenge: "Outdated mobile app with poor UX, security concerns, and limited functionality.",
-    solution: "Complete mobile app redesign with biometric security, AI-powered insights, and seamless UX.",
-    results: [
-      "400% increase in mobile usage",
-      "95% user satisfaction score",
-      "Zero security incidents post-launch"
-    ],
-    image: "https://images.pexels.com/photos/159888/pexels-photo-159888.jpeg?auto=compress&cs=tinysrgb&w=600&h=400",
-    tags: ["Flutter", "Firebase", "Razorpay", "Security"]
-  },
-  {
-    title: "Travel Booking Platform",
-    category: "Travel & Hospitality",
-    description: "End-to-end travel booking system with flight, hotel, and activity reservations integrated into one platform.",
-    technologies: ["React.js", "MongoDB", "Node.js", "Stripe API"],
-    features: ["Flight Booking", "Hotel Reservations", "Activity Packages", "Payment Gateway"],
-    status: "Completed",
-    client: "TravelMate Inc.",
-    challenge: "Fragmented travel booking process causing poor user experience and missed bookings.",
-    solution: "Developed an integrated travel platform for flights, hotels, and activities with payment gateway integration.",
-    results: [
-      "Unified booking experience",
-      "Increased bookings by 70%",
-      "Seamless payment integration"
-    ],
-    image: "https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg?auto=compress&cs=tinysrgb&w=600&h=400",
-    tags: ["React.js", "MongoDB", "Node.js", "Stripe API"]
-  },
-  {
-    title: "Online Learning Platform",
-    category: "EdTech Solution",
-    description: "Interactive e-learning platform with live classes, recorded lectures, quizzes, and progress tracking for students.",
-    technologies: ["Flutter", "Firebase", "Node.js", "WebRTC"],
-    features: ["Live Classes", "Recorded Lectures", "Quizzes & Exams", "Student Progress Dashboard"],
-    status: "Recently Delivered",
-    client: "EduLearn",
-    challenge: "Limited interactivity, poor engagement, and lack of performance tracking in existing e-learning systems.",
-    solution: "Developed a Flutter platform with live classes, quizzes, and progress tracking to enhance learning experience.",
-    results: [
-      "Improved student engagement",
-      "Real-time progress tracking",
-      "Interactive learning experience"
-    ],
-    image: "https://images.pexels.com/photos/4145192/pexels-photo-4145192.jpeg?auto=compress&cs=tinysrgb&w=600&h=400",
-    tags: ["Flutter", "Firebase", "Node.js", "WebRTC"]
-  }
 ];
-
 
 export function Portfolio() {
   return (
@@ -177,17 +170,20 @@ export function Portfolio() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
-            Success <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 via-cyan-400 to-violet-500">Stories</span>
+            Product <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 via-cyan-400 to-violet-500">Ecosystem</span>
           </h2>
           <p className="text-xl text-slate-300 max-w-3xl mx-auto">
-            Discover how we&rsquo;ve helped businesses transform their digital landscape and achieve
-            measurable results.
+            A growing portfolio of SaaS platforms, core modules, and system capabilities built for
+            scale, security, and long-term value.
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
           {projects.map((project, index) => (
-            <Card key={index} className="group hover:shadow-cyan-500/30 transition-all duration-500 border border-white/10 bg-slate-900/70 overflow-hidden backdrop-blur">
+            <Card
+              key={index}
+              className="group hover:shadow-cyan-500/30 transition-all duration-500 border border-white/10 bg-slate-900/70 overflow-hidden backdrop-blur"
+            >
               <div className="relative h-48 overflow-hidden">
                 <Image
                   src={project.image}
@@ -214,7 +210,7 @@ export function Portfolio() {
                   {project.title}
                 </h3>
                 <p className="text-teal-300 font-semibold mb-4">
-                  {project.client}
+                  {project.category}
                 </p>
 
                 <div className="space-y-4">
@@ -233,10 +229,13 @@ export function Portfolio() {
                   </div>
 
                   <div>
-                    <h4 className="font-semibold text-slate-200 mb-2">Results:</h4>
+                    <h4 className="font-semibold text-slate-200 mb-2">Outcome:</h4>
                     <ul className="space-y-1">
                       {project.results.map((result, idx) => (
-                        <li key={idx} className="text-slate-300 text-sm flex items-center">
+                        <li
+                          key={idx}
+                          className="text-slate-300 text-sm flex items-center"
+                        >
                           <span className="w-2 h-2 bg-teal-400 rounded-full mr-2 flex-shrink-0"></span>
                           {result}
                         </li>
@@ -244,12 +243,10 @@ export function Portfolio() {
                     </ul>
                   </div>
                 </div>
-
               </CardContent>
             </Card>
           ))}
         </div>
-
       </div>
     </section>
   );

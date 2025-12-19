@@ -9,13 +9,10 @@ import { Stats } from '@/components/stats';
 import { Portfolio } from '@/components/portfolio';
 import { Process } from '@/components/process';
 import { TechStack } from '@/components/tech-stack';
-import { Blog } from '@/components/blog';
 import { FAQ } from '@/components/faq';
 import { Contact } from '@/components/contact';
 import { Careers } from '@/components/careers';
 import { Footer } from '@/components/footer';
-import TechnicalSupportPage  from '@/components/TechnicalSupportPage';
-import PlansPage from '@/components/Plans';
 
 
 export default function Home() {
@@ -31,16 +28,9 @@ export default function Home() {
         <Stats />
         <Portfolio />
         <TechStack />
-        <Blog />
         <FAQ />
         <Careers />
         <Contact />
-        <section id="support">
-          <TechnicalSupportPage />
-        </section>
-        <section id="plans">
-          <PlansPage />
-        </section>
       </main>
       <Footer />
     </div>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MapPin, Clock, ArrowRight, Heart, Zap, Users, Trophy, IndianRupee } from 'lucide-react';
+import { MapPin, Clock, ArrowRight, Heart, Zap, Users, Trophy, IndianRupee, Timer } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { JobApplicationForm } from './form';
@@ -21,21 +21,6 @@ const jobOpenings = [
     ]
   },
   {
-    title: 'SEO Executive',
-    department: 'Marketing',
-    location: 'Bhavnagar, Gujarat / Remote',
-    type: 'Full-time',
-    salary: '2 LPA - 3.5 LPA',
-    experience: '0-2 years',
-    description: 'Optimize website content and improve search engine rankings to drive organic traffic and enhance online visibility.',
-    requirements: [
-      'Understanding of SEO tools (Google Analytics, SEMrush, Ahrefs)',
-      'Keyword research and on-page optimization',
-      'Content strategy and link building',
-      'Analytical skills and reporting'
-    ]
-  },
-  {
     title: 'Flutter Developer',
     department: 'Engineering',
     location: 'Bhavnagar, Gujarat / Remote',
@@ -48,21 +33,6 @@ const jobOpenings = [
       'Firebase integration',
       'UI/UX implementation',
       'Problem-solving skills'
-    ]
-  },
-  {
-    title: 'Web Developer',
-    department: 'Engineering',
-    location: 'Bhavnagar, Gujarat / Remote',
-    type: 'Full-time',
-    salary: '2.5 LPA - 5 LPA',
-    experience: '1-2 years',
-    description: 'Create responsive websites and web applications using modern technologies like React, Node.js, and cloud services.',
-    requirements: [
-      'React/JavaScript',
-      'Node.js basics',
-      'Responsive design',
-      'Version control (Git)'
     ]
   },
   {
@@ -81,12 +51,12 @@ const jobOpenings = [
     ]
   },
   {
-    title: 'Digital Marketing Intern',
+    title: 'Digital Marketing',
     department: 'Marketing',
     location: 'Bhavnagar, Gujarat',
-    type: 'Internship',
-    salary: '5k - 10k / month (Stipend)',
-    experience: '0-1 years',
+    type: 'Full Time',
+    salary: '15k - 20k ',
+    experience: '2-3 years',
     description: 'Learn and contribute to our digital marketing efforts including SEO, social media, and content marketing.',
     requirements: [
       'Digital marketing basics',
@@ -188,9 +158,14 @@ export function Careers() {
                       {job.type}
                     </div>
                     <div className="flex items-center text-sm text-slate-400">
+                      <Timer className="w-4 h-4 mr-2" />
+                      {job.experience}
+                    </div>
+                     <div className="flex items-center text-sm text-slate-400">
                       <IndianRupee className="w-4 h-4 mr-2" />
                       {job.salary}
                     </div>
+                  
                   </div>
 
                   <div className="mb-6">

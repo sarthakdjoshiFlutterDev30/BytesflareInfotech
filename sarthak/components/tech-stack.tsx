@@ -1,38 +1,64 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { Code, Database, Cloud, Smartphone, Globe, Shield } from 'lucide-react';
+import { Smartphone, Database, Cloud, Cpu, Shield } from 'lucide-react';
 
+// Bytesflare Infotech — Focused Flutter + Firebase Product Stack
 const techCategories = [
   {
-    icon: Code,
-    title: 'Frontend',
-    technologies: ['React', 'Next.js', 'Vue.js', 'Angular', 'TypeScript', 'Tailwind CSS']
+    icon: Smartphone,
+    title: 'Frontend (Mobile & Web)',
+    technologies: [
+      'Flutter',
+      'Flutter Web',
+      'Material UI',
+      'Cupertino UI',
+      'Responsive Design'
+    ]
   },
   {
     icon: Database,
-    title: 'Backend',
-    technologies: ['Node.js', 'Python', 'Java', 'PHP', 'C#', '.NET Core']
-  },
-  {
-    icon: Database,
-    title: 'Databases',
-    technologies: ['PostgreSQL', 'MongoDB', 'MySQL', 'Redis', 'Elasticsearch', 'Firebase']
+    title: 'Backend & Database',
+    technologies: [
+      'Firebase',
+      'Cloud Firestore',
+      'Firebase Realtime Database',
+      'Firebase Functions',
+      'Firebase Storage'
+    ]
   },
   {
     icon: Cloud,
-    title: 'Cloud & DevOps',
-    technologies: ['AWS', 'Azure', 'Google Cloud', 'Docker', 'Kubernetes', 'Jenkins']
+    title: 'Authentication & Infrastructure',
+    technologies: [
+      'Firebase Authentication',
+      'OTP & Phone Auth',
+      'Email & Password Auth',
+      'Role-Based Access Control',
+      'Serverless Architecture'
+    ]
   },
   {
-    icon: Smartphone,
-    title: 'Mobile',
-    technologies: ['React Native', 'Flutter']
+    icon: Cpu,
+    title: 'Real-Time Systems',
+    technologies: [
+      'QR Code Attendance',
+      'Live Session Tracking',
+      'Real-Time Sync',
+      'Offline Support',
+      'Instant Data Updates'
+    ]
   },
   {
-    icon: Globe,
-    title: 'Integration',
-    technologies: ['REST APIs', 'GraphQL', 'Microservices', 'Webhooks', 'OAuth', 'JWT']
+    icon: Shield,
+    title: 'Security & Reliability',
+    technologies: [
+      'Firestore Security Rules',
+      'Encrypted Data Storage',
+      'User Access Control',
+      'Audit Logs',
+      'Scalable Architecture'
+    ]
   }
 ];
 
@@ -60,16 +86,19 @@ export function TechStack() {
   return (
     <section ref={sectionRef} className="py-24 bg-slate-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* Heading */}
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
-            Our Technology <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-cyan-500">Stack</span>
+            Our Product <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-cyan-500">Technology Stack</span>
           </h2>
           <p className="text-xl text-slate-300 max-w-3xl mx-auto">
-            We leverage cutting-edge technologies and industry best practices to build scalable, 
-            secure, and high-performance solutions.
+            Bytesflare Infotech builds powerful, real-time, and scalable products
+            using a focused Flutter & Firebase ecosystem.
           </p>
         </div>
 
+        {/* Tech Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {techCategories.map((category, index) => (
             <div
@@ -99,16 +128,19 @@ export function TechStack() {
           ))}
         </div>
 
+        {/* Security Banner */}
         <div className="mt-16 text-center">
           <div className="bg-gradient-to-r from-teal-500 to-blue-600 p-8 rounded-2xl text-white shadow-lg shadow-teal-500/30">
             <Shield className="w-12 h-12 mx-auto mb-4" />
-            <h3 className="text-2xl font-bold mb-4">Security & Compliance First</h3>
+            <h3 className="text-2xl font-bold mb-4">Built for Scale & Security</h3>
             <p className="text-lg opacity-90 max-w-2xl mx-auto">
-              All our solutions are built with enterprise-grade security, following industry standards 
-              like GDPR, HIPAA, and SOC 2 compliance requirements.
+              Our Flutter & Firebase architecture ensures real-time performance,
+              enterprise-grade security, and effortless scalability for thousands
+              of users.
             </p>
           </div>
         </div>
+
       </div>
     </section>
   );

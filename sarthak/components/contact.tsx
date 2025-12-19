@@ -20,8 +20,6 @@ export function Contact() {
     name: "",
     email: "",
     phone: "",
-    projectType: "",
-    budget: "",
     message: "",
   });
 
@@ -39,7 +37,7 @@ export function Contact() {
     // Clear any existing timeouts
     if (sentAnimationTimeout.current) clearTimeout(sentAnimationTimeout.current);
 
-    const requiredFields: (keyof typeof formData)[] = ['name', 'email', 'phone', 'projectType', 'budget', 'message'];
+    const requiredFields: (keyof typeof formData)[] = ['name', 'email', 'phone','message'];
     const hasEmptyFields = requiredFields.some((field) => !formData[field].trim());
 
     if (hasEmptyFields) {
@@ -68,8 +66,6 @@ export function Contact() {
             name: "",
             email: "",
             phone: "",
-            projectType: "",
-            budget: "",
             message: "",
           });
         }, 1500);
@@ -295,52 +291,9 @@ export function Contact() {
                   />
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-5">
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-200 mb-1.5">Project Type *</label>
-                    <Select
-                      value={formData.projectType}
-                      onValueChange={(v) => setFormData((p) => ({ ...p, projectType: v }))}
-                    >
-                      <SelectTrigger className="bg-slate-950 border-white/20 text-white w-full focus:ring-cyan-400/20 text-base md:text-sm">
-                        <SelectValue placeholder="Select project type" />
-                      </SelectTrigger>
-                      <SelectContent
-                        position="popper"
-                        className="bg-slate-950 border border-white/10 text-white shadow-xl shadow-slate-900/50 max-h-60 overflow-y-auto z-50"
-                      >
-                        <SelectItem value="Mobile App Development">Mobile App</SelectItem>
-                        <SelectItem value="Web Development">Web App / Website</SelectItem>
-                        <SelectItem value="ERP Solution">ERP / Internal Tools</SelectItem>
-                        <SelectItem value="Other">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-200 mb-1.5">Project Budget *</label>
-                    <Select
-                      value={formData.budget}
-                      onValueChange={(v) => setFormData((p) => ({ ...p, budget: v }))}
-                    >
-                      <SelectTrigger className="bg-slate-950 border-white/20 text-white w-full focus:ring-cyan-400/20 text-base md:text-sm">
-                        <SelectValue placeholder="Select budget range" />
-                      </SelectTrigger>
-                      <SelectContent
-                        position="popper"
-                        className="bg-slate-950 border border-white/10 text-white shadow-xl shadow-slate-900/50 max-h-60 overflow-y-auto z-50"
-                      >
-                        <SelectItem value="₹10,000 - ₹20,000">₹10,000 - ₹20,000</SelectItem>
-                        <SelectItem value="₹20,000 - ₹30,000">₹20,000 - ₹30,000</SelectItem>
-                        <SelectItem value="₹30,000 - ₹40,000">₹30,000 - ₹40,000</SelectItem>
-                        <SelectItem value="₹40,000 - ₹50,000">₹40,000 - ₹50,000</SelectItem>
-                        <SelectItem value="₹50,000+">₹50,000+</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
+                
                 <div>
-                  <label className="block text-sm font-semibold text-slate-200 mb-1.5">Project Description *</label>
+                  <label className="block text-sm font-semibold text-slate-200 mb-1.5">Message *</label>
                   <Textarea 
                     name="message" 
                     value={formData.message} 
