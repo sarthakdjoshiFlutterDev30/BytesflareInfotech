@@ -2,9 +2,15 @@
 
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
-import { Menu, X, Zap } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Logo from '@/app/Logo.png';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '@radix-ui/react-dropdown-menu';
 
 export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -66,6 +72,23 @@ export function Navigation() {
                 {link.label}
               </a>
             ))}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="text-slate-300 hover:text-cyan-300 transition-colors duration-200 font-medium">
+                  Products
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="min-w-[200px] bg-slate-900/95 border border-white/10 backdrop-blur-xl rounded-lg p-2">
+                <DropdownMenuItem asChild>
+                  <a
+                    href="/bytesattend"
+                    className="block w-full rounded-md px-3 py-2 text-slate-200 hover:bg-white/5 hover:text-white transition-colors"
+                  >
+                    BytesAttend
+                  </a>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <a href='#contact'
               className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:shadow-cyan-500/40 text-white px-6 py-2 rounded-full transition-all duration-200 hover:scale-105"
             >
@@ -98,6 +121,16 @@ export function Navigation() {
                   {link.label}
                 </a>
               ))}
+              <div className="px-3 pt-2">
+                <div className="text-slate-400 text-xs uppercase tracking-wide mb-1">Products</div>
+                <a
+                  href="/bytesattend"
+                  className="block px-3 py-2 rounded-md text-slate-300 hover:text-white hover:bg-white/5 transition-all duration-200"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  BytesAttend
+                </a>
+              </div>
               <div className="px-3 pt-2">
                 <a
                 href='#contact'
