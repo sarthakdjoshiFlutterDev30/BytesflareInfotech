@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   description:
     'Your trusted partner for web development, mobile apps, ERP solutions, and API integration. Transform your vision into cutting-edge digital solutions.',
   keywords:
-    'IT services, web development, mobile apps, ERP solutions, API integration, software development,mobile app development, web development, ERP solutions, Flutter development, MERN stack, digital transformation, Bytesflare Infotech,bytes,flare,inforech',
+    'IT services, web development, mobile apps, ERP solutions, API integration, software development,mobile app development, web development, ERP solutions, Flutter development, MERN stack, digital transformation, Bytesflare Infotech,bytes,flare,inforech,BytesAttend, digital attendance system, face recognition attendance, biometric attendance, automatic attendance, geo-fencing attendance, NAAC compliant attendance, IQAC attendance solution, school attendance app, college attendance software, employee attendance tracker, online attendance solution, secure attendance app, attendance management system, mobile attendance app, premium attendance software, attendance automation, educational institution attendance, smart attendance system, facial verification attendance',
   verification: {
     google: 'Nr6_ejgGp7gXH4ioPH-4mEeOi0QpgswRPJYF_y3PBOI',
   },
