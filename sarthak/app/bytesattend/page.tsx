@@ -236,7 +236,7 @@ const Page: React.FC = () => {
             Premium Pricing
           </h2>
           <p className="text-2xl md:text-3xl font-semibold mb-6 gradient-text">
-            ₹365 + Applicable GST Per User Per Year
+            Contact For Pricing (+91-8799196162)
           </p>
           <a href="#contact">
             <Button className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white font-semibold px-8 py-6 rounded-xl shadow-[0_0_30px_rgba(20,184,166,0.35)] transition-transform hover:scale-105">
