@@ -265,15 +265,31 @@ const Page: React.FC = () => {
                 bytesflareinfotechsales@gmail.com
               </a>
             </div>
+            <div className="mt-6 pt-6 border-t border-white/10">
+              <a href="/bytesattend/privacy-policy">
+                <Button variant="outline" className="border-slate-600 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+                  <Shield className="mr-2 h-4 w-4" />
+                  Privacy Policy
+                </Button>
+              </a>
+            </div>
           </div>
         </div>
       </section>
 
       <section className="px-6 md:px-20 py-20 bg-slate-950 text-center">
         <h2 className="text-3xl md:text-4xl font-bold mb-6">About Bytesflare Infotech</h2>
-        <p className="text-slate-300 max-w-3xl mx-auto">
+        <p className="text-slate-300 max-w-3xl mx-auto mb-8">
           Bytesflare Infotech builds premium, secure, and scalable digital products for educational institutions and enterprises. BytesAttend is our flagship product—delivering authentic, tamper-proof, and NAAC-compliant attendance with modern, cloud-first architecture.
         </p>
+        <div className="flex items-center justify-center gap-4 flex-wrap">
+          <a href="/bytesattend/privacy-policy">
+            <Button variant="outline" className="border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white hover:border-teal-500/50 transition-all">
+              <Shield className="mr-2 h-4 w-4" />
+              Privacy Policy
+            </Button>
+          </a>
+        </div>
       </section>
 
       <Footer />
