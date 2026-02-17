@@ -266,12 +266,20 @@ const Page: React.FC = () => {
               </a>
             </div>
             <div className="mt-6 pt-6 border-t border-white/10">
-              <a href="/bytesattend/privacy-policy">
-                <Button variant="outline" className="border-slate-600 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
-                  <Shield className="mr-2 h-4 w-4" />
-                  Privacy Policy
-                </Button>
-              </a>
+              <div className="flex items-center justify-center gap-4 flex-wrap">
+                <a href="/bytesattend/privacy-policy">
+                  <Button variant="outline" className="border-slate-600 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+                    <Shield className="mr-2 h-4 w-4" />
+                    Privacy Policy
+                  </Button>
+                </a>
+                <a href="/bytesattend/terms-of-use">
+                  <Button variant="outline" className="border-slate-600 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+                    <FileText className="mr-2 h-4 w-4" />
+                    Terms of Use
+                  </Button>
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -287,6 +295,12 @@ const Page: React.FC = () => {
             <Button variant="outline" className="border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white hover:border-teal-500/50 transition-all">
               <Shield className="mr-2 h-4 w-4" />
               Privacy Policy
+            </Button>
+          </a>
+          <a href="/bytesattend/terms-of-use">
+            <Button variant="outline" className="border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white hover:border-indigo-500/50 transition-all">
+              <FileText className="mr-2 h-4 w-4" />
+              Terms of Use
             </Button>
           </a>
         </div>
