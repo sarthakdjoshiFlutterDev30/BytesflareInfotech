@@ -45,7 +45,7 @@ export default function BytesAttendPrivacyPolicy() {
           ]
         },
         {
-          subtitle: "1.3 Camera & Face Verification Data (If Enabled by Institution)",
+          subtitle: "1.3 Camera & Face Verification Data",
           description: "BytesAttend may access the device camera to:",
           items: [
             "Capture a facial image during attendance marking",
@@ -58,7 +58,7 @@ export default function BytesAttendPrivacyPolicy() {
           ]
         },
         {
-          subtitle: "1.4 Location Data (If Geo-Fencing Enabled)",
+          subtitle: "1.4 Location Data",
           description: "BytesAttend may collect GPS location data only at the time of attendance marking to:",
           items: [
             "Verify that the user is within the authorized institutional premises."
