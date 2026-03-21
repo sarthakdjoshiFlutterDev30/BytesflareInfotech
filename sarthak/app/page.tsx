@@ -2,18 +2,17 @@
 
 import { Navigation } from '@/components/navigation';
 import { Hero } from '@/components/hero';
-import { Services } from '@/components/services';
 import { About } from '@/components/about';
-import { TrustSignals } from '@/components/trust-signals';
 import { Stats } from '@/components/stats';
-import { Portfolio } from '@/components/portfolio';
+import { Services } from '@/components/services';
 import { Process } from '@/components/process';
+import { Portfolio } from '@/components/portfolio';
+import { TrustSignals } from '@/components/trust-signals';
 import { TechStack } from '@/components/tech-stack';
 import { FAQ } from '@/components/faq';
-import { Contact } from '@/components/contact';
 import { Careers } from '@/components/careers';
+import { Contact } from '@/components/contact';
 import { Footer } from '@/components/footer';
-
 
 export default function Home() {
   return (
@@ -21,12 +20,12 @@ export default function Home() {
       <Navigation />
       <main>
         <Hero />
-        <Services />
-        <About />
-        <Process />
-        <TrustSignals />
         <Stats />
+        <About />
+        <Services />
+        <Process />
         <Portfolio />
+        <TrustSignals />
         <TechStack />
         <FAQ />
         <Careers />

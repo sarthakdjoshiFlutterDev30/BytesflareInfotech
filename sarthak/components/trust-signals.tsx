@@ -1,142 +1,101 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { GraduationCap, Building2, Users, CheckCircle2 } from 'lucide-react';
 
-const clientLogos = [
-  { name: 'TechCorp', url: 'https://images.pexels.com/photos/590016/pexels-photo-590016.jpeg?auto=compress&cs=tinysrgb&w=200&h=100' },
-  { name: 'InnovateLabs', url: 'https://images.pexels.com/photos/590016/pexels-photo-590016.jpeg?auto=compress&cs=tinysrgb&w=200&h=100' },
-  { name: 'GlobalTech', url: 'https://images.pexels.com/photos/590016/pexels-photo-590016.jpeg?auto=compress&cs=tinysrgb&w=200&h=100' },
-  { name: 'DigitalFlow', url: 'https://images.pexels.com/photos/590016/pexels-photo-590016.jpeg?auto=compress&cs=tinysrgb&w=200&h=100' },
-  { name: 'CloudSphere', url: 'https://images.pexels.com/photos/590016/pexels-photo-590016.jpeg?auto=compress&cs=tinysrgb&w=200&h=100' },
-  { name: 'DataSync', url: 'https://images.pexels.com/photos/590016/pexels-photo-590016.jpeg?auto=compress&cs=tinysrgb&w=200&h=100' },
+const useCases = [
+  {
+    icon: GraduationCap,
+    title: 'Colleges & Universities',
+    desc: 'Multi-department setup with course, semester, and division-level attendance. NAAC/IQAC audit-ready reports with elective subject tracking.',
+    tags: ['NAAC Compliant', 'Multi-Department', 'Elective Tracking'],
+    color: 'teal',
+  },
+  {
+    icon: Building2,
+    title: 'Schools & Coaching',
+    desc: 'Class-wise attendance with teacher oversight. Bulk student import via Excel. Parent-friendly transparency through student reports.',
+    tags: ['Class-Wise', 'Bulk Import', 'Reports'],
+    color: 'cyan',
+  },
+  {
+    icon: Users,
+    title: 'Enterprises & Training',
+    desc: 'Role-based access control, location-bound session management, and secure cloud storage for workforce attendance tracking.',
+    tags: ['Role-Based', 'Geo-Fenced', 'Secure Cloud'],
+    color: 'blue',
+  },
 ];
 
-const testimonials = [
-  {
-    quote: "Bytesflare transformed our digital presence completely. Their technical expertise and attention to detail exceeded all expectations.",
-    author: "Sarah Johnson",
-    position: "CTO, TechCorp",
-    rating: 5,
-  },
-  {
-    quote: "The ERP solution they built for us has revolutionized our operations. Incredible team with exceptional problem-solving skills.",
-    author: "Michael Chen",
-    position: "CEO, InnovateLabs",
-    rating: 5,
-  },
-  {
-    quote: "Outstanding mobile app development. They delivered exactly what we envisioned, on time and within budget.",
-    author: "Emily Rodriguez",
-    position: "Product Manager, GlobalTech",
-    rating: 5,
-  },
+const colorMap: Record<string, { border: string; bg: string; icon: string; tag: string }> = {
+  teal: { border: 'border-teal-500/20', bg: 'bg-teal-500/10', icon: 'text-teal-400', tag: 'bg-teal-500/10 border-teal-500/20 text-teal-300' },
+  cyan: { border: 'border-cyan-500/20', bg: 'bg-cyan-500/10', icon: 'text-cyan-400', tag: 'bg-cyan-500/10 border-cyan-500/20 text-cyan-300' },
+  blue: { border: 'border-blue-500/20', bg: 'bg-blue-500/10', icon: 'text-blue-400', tag: 'bg-blue-500/10 border-blue-500/20 text-blue-300' },
+};
+
+const outcomes = [
+  'Near-zero proxy attendance with face verification + geo-fencing',
+  'Automated daily session generation — no manual effort',
+  'NAAC/IQAC audit-ready reports generated automatically',
+  'Real-time attendance visibility for admins and teachers',
+  'Bulk user management via Excel import',
+  'Semester promotion with a single bulk action',
 ];
 
 export function TrustSignals() {
-  const [currentTestimonial, setCurrentTestimonial] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
-    }, 5000);
-
-    return () => clearInterval(timer);
-  }, []);
-
-  const nextTestimonial = () => {
-    setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
-  };
-
-  const prevTestimonial = () => {
-    setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length);
-  };
-
   return (
-    <section className="py-24 bg-slate-950">
+    <section className="py-24 bg-slate-900/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Client Logos */}
-        <div className="mb-20">
-          <h3 className="text-center text-slate-300 text-lg font-semibold mb-12">
-            Trusted by Leading Companies
-          </h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 items-center opacity-70">
-            {clientLogos.map((client, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-center p-4 hover:opacity-100 transition-opacity duration-300"
-              >
-                <div className="w-24 h-12 bg-slate-900 rounded flex items-center justify-center border border-white/10">
-                  <span className="text-slate-300 text-sm font-semibold">
-                    {client.name}
-                  </span>
-                </div>
-              </div>
-            ))}
+        {/* Use Cases */}
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center gap-2 bg-teal-500/10 border border-teal-500/20 rounded-full px-4 py-1.5 mb-6">
+            <span className="text-teal-400 text-sm font-medium">Who It's For</span>
           </div>
+          <h2 className="text-4xl lg:text-5xl font-bold text-white mb-4">
+            Built for every{' '}
+            <span className="bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent">
+              institution type
+            </span>
+          </h2>
         </div>
 
-        {/* Testimonials */}
-        <div className="text-center">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-16">
-            What Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-purple-500">Clients Say</span>
-          </h2>
-
-          <div className="relative max-w-4xl mx-auto">
-            <div className="bg-slate-900/70 backdrop-blur p-8 md:p-12 rounded-2xl border border-white/10 shadow-2xl">
-              <div className="flex justify-center mb-6">
-                {[...Array(testimonials[currentTestimonial].rating)].map((_, i) => (
-                  <Star key={i} className="w-6 h-6 text-amber-300 fill-current drop-shadow-[0_0_6px_rgba(251,191,36,0.6)]" />
-                ))}
-              </div>
-
-              <blockquote className="text-xl md:text-2xl text-slate-200 mb-8 leading-relaxed">
-                &ldquo;{testimonials[currentTestimonial].quote}&rdquo;
-              </blockquote>
-
-              <div>
-                <div className="font-bold text-white text-lg">
-                  {testimonials[currentTestimonial].author}
+        <div className="grid lg:grid-cols-3 gap-6 mb-20">
+          {useCases.map(({ icon: Icon, title, desc, tags, color }) => {
+            const c = colorMap[color];
+            return (
+              <div
+                key={title}
+                className={`bg-slate-900/60 border ${c.border} rounded-2xl p-8 hover:bg-slate-900/80 transition-colors duration-300`}
+              >
+                <div className={`w-12 h-12 ${c.bg} rounded-xl flex items-center justify-center mb-5`}>
+                  <Icon className={`w-6 h-6 ${c.icon}`} />
                 </div>
-                <div className="text-slate-400">
-                  {testimonials[currentTestimonial].position}
+                <h3 className="text-white font-bold text-lg mb-3">{title}</h3>
+                <p className="text-slate-400 leading-relaxed mb-5 text-sm">{desc}</p>
+                <div className="flex flex-wrap gap-2">
+                  {tags.map((tag) => (
+                    <span key={tag} className={`text-xs border rounded-full px-3 py-1 ${c.tag}`}>
+                      {tag}
+                    </span>
+                  ))}
                 </div>
               </div>
-            </div>
+            );
+          })}
+        </div>
 
-            {/* Navigation buttons */}
-            <div className="flex justify-center mt-8 space-x-4">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={prevTestimonial}
-                className="w-10 h-10 rounded-full p-0 border-slate-600 hover:border-teal-500 hover:text-teal-400 text-slate-300"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={nextTestimonial}
-                className="w-10 h-10 rounded-full p-0 border-slate-600 hover:border-teal-500 hover:text-teal-400 text-slate-300"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </Button>
-            </div>
-
-            {/* Dots indicator */}
-            <div className="flex justify-center mt-6 space-x-2">
-              {testimonials.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentTestimonial(index)}
-                  className={`w-3 h-3 rounded-full transition-colors ${
-                    index === currentTestimonial ? 'bg-gradient-to-r from-teal-400 to-cyan-500' : 'bg-slate-600'
-                  }`}
-                />
-              ))}
-            </div>
+        {/* Outcomes */}
+        <div className="bg-gradient-to-br from-slate-900 to-slate-900/60 border border-white/10 rounded-3xl p-10">
+          <div className="text-center mb-10">
+            <h3 className="text-3xl font-bold text-white mb-3">What institutions get</h3>
+            <p className="text-slate-400">Real outcomes from deploying BytesAttend</p>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {outcomes.map((o) => (
+              <div key={o} className="flex items-start gap-3">
+                <CheckCircle2 className="w-5 h-5 text-teal-400 flex-shrink-0 mt-0.5" />
+                <span className="text-slate-300 text-sm leading-relaxed">{o}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>

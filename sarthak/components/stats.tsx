@@ -1,81 +1,63 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Users, Trophy, Clock, Zap } from 'lucide-react';
+import { Building2, Users, ShieldCheck, Clock } from 'lucide-react';
 
 const stats = [
-  { icon: Trophy, label: 'Projects Delivered', value: 250, suffix: '+' },
-  { icon: Users, label: 'Happy Clients', value: 150, suffix: '+' },
-  { icon: Trophy, label: '5★ Rated Projects', value: 200, suffix: '+' },
-    { icon: Zap, label: 'Technologies Mastered', value: 30, suffix: '+' },
+  { icon: Building2, value: 30, suffix: '+', label: 'Active Deployments', color: 'text-teal-400' },
+  { icon: Users, value: 5000, suffix: '+', label: 'Students Tracked', color: 'text-cyan-400' },
+  { icon: ShieldCheck, value: 99, suffix: '.9%', label: 'System Accuracy', color: 'text-blue-400' },
+  { icon: Clock, value: 24, suffix: '/7', label: 'Cloud Availability', color: 'text-violet-400' },
 ];
 
 export function Stats() {
   const [counters, setCounters] = useState(stats.map(() => 0));
-  const [hasAnimated, setHasAnimated] = useState(false);
-  const sectionRef = useRef<HTMLElement>(null);
+  const [animated, setAnimated] = useState(false);
+  const ref = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && !hasAnimated) {
-          setHasAnimated(true);
-          
-          stats.forEach((stat, index) => {
+      ([entry]) => {
+        if (entry.isIntersecting && !animated) {
+          setAnimated(true);
+          stats.forEach((stat, i) => {
             let current = 0;
-            const increment = stat.value / 50; // 50 steps for smooth animation
+            const steps = 60;
+            const inc = stat.value / steps;
             const timer = setInterval(() => {
-              current += increment;
+              current += inc;
               if (current >= stat.value) {
                 current = stat.value;
                 clearInterval(timer);
               }
-              setCounters(prev => {
-                const newCounters = [...prev];
-                newCounters[index] = Math.floor(current);
-                return newCounters;
+              setCounters((prev) => {
+                const next = [...prev];
+                next[i] = Math.floor(current);
+                return next;
               });
-            }, 40); // Update every 40ms
+            }, 30);
           });
         }
       },
-      { threshold: 0.5 }
+      { threshold: 0.4 }
     );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
+    if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
-  }, [hasAnimated]);
+  }, [animated]);
 
   return (
-    <section ref={sectionRef} className="py-24 bg-gradient-to-br from-slate-800 to-slate-900">
+    <section ref={ref} className="py-20 bg-slate-900/50 border-y border-white/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
-            Our <span className="text-teal-400">Impact</span> in Numbers
-          </h2>
-          <p className="text-xl text-slate-300 max-w-2xl mx-auto">
-            Delivering exceptional results and building lasting partnerships across industries.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {stats.map((stat, index) => (
-            <div
-              key={index}
-              className="text-center p-8 rounded-2xl bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all duration-300 hover:scale-105"
-            >
-              <div className="w-16 h-16 bg-gradient-to-br from-teal-400 to-teal-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                <stat.icon className="w-8 h-8 text-white" />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+          {stats.map(({ icon: Icon, suffix, label, color }, i) => (
+            <div key={label} className="text-center">
+              <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl bg-slate-900 border border-white/10 mb-4 mx-auto`}>
+                <Icon className={`w-6 h-6 ${color}`} />
               </div>
-              <div className="text-4xl lg:text-5xl font-bold text-white mb-2">
-                {counters[index]}{stat.suffix}
+              <div className="text-4xl font-bold text-white mb-1">
+                {counters[i]}{suffix}
               </div>
-              <div className="text-slate-300 font-medium">
-                {stat.label}
-              </div>
+              <div className="text-slate-400 text-sm">{label}</div>
             </div>
           ))}
         </div>

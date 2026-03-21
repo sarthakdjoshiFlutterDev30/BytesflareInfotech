@@ -1,342 +1,258 @@
+'use client';
+
 import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Mail, Phone, Clock, Send, CheckCircle2, Loader2 } from 'lucide-react';
+import { Mail, Phone, Clock, Send, CheckCircle2, Loader2, MapPin } from 'lucide-react';
 
 export function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [statusMessage, setStatusMessage] = useState("");
+  const [statusMessage, setStatusMessage] = useState('');
   const [showSentAnimation, setShowSentAnimation] = useState(false);
-  const [showConfirmationAnimation, setShowConfirmationAnimation] = useState(false);
-  
-  // Refs for cleanup
-  const sentAnimationTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const confirmationAnimationTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [showConfirmAnim, setShowConfirmAnim] = useState(false);
 
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    message: "",
-  });
+  const sentTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const confirmTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  function handleChange(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+  const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' });
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  }
+    setForm((p) => ({ ...p, [name]: value }));
+  };
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     setIsSubmitting(true);
-    setStatusMessage("");
+    setStatusMessage('');
     setShowSentAnimation(false);
+    if (sentTimeout.current) clearTimeout(sentTimeout.current);
 
-    // Clear any existing timeouts
-    if (sentAnimationTimeout.current) clearTimeout(sentAnimationTimeout.current);
-
-    const requiredFields: (keyof typeof formData)[] = ['name', 'email', 'phone','message'];
-    const hasEmptyFields = requiredFields.some((field) => !formData[field].trim());
-
-    if (hasEmptyFields) {
-      setStatusMessage("❌ Please fill out all fields before sending.");
+    if (Object.values(form).some((v) => !v.trim())) {
+      setStatusMessage('❌ Please fill out all fields.');
       setIsSubmitting(false);
       return;
     }
 
     try {
-      const response = await fetch("https://bytesflareinfotech-backend.onrender.com/api/contacts", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
+      const res = await fetch('https://bytesflareinfotech-backend.onrender.com/api/contacts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
       });
 
-      if (response.ok) {
-        // Success Sequence
+      if (res.ok) {
         setShowSentAnimation(true);
-        sentAnimationTimeout.current = setTimeout(() => {
+        sentTimeout.current = setTimeout(() => {
           setShowSentAnimation(false);
           setSubmitted(true);
-          // Reset form data
-          setFormData({
-            name: "",
-            email: "",
-            phone: "",
-            message: "",
-          });
+          setForm({ name: '', email: '', phone: '', message: '' });
         }, 1500);
-        setStatusMessage("✅ Message sent successfully!");
+        setStatusMessage('✅ Message sent successfully!');
       } else {
-        // Safe Error Parsing
-        let errorMsg = "Please try again.";
-        try {
-          const errorData = await response.json();
-          errorMsg = errorData.message || errorMsg;
-        } catch (e) {
-          console.error("Non-JSON response received");
-        }
-        setStatusMessage(`❌ Failed: ${errorMsg}`);
+        let msg = 'Please try again.';
+        try { const d = await res.json(); msg = d.message || msg; } catch {}
+        setStatusMessage(`❌ Failed: ${msg}`);
       }
-    } catch (err) {
-      console.error(err);
-      setStatusMessage("❌ Network error. Please check your connection.");
+    } catch {
+      setStatusMessage('❌ Network error. Please check your connection.');
     } finally {
-      // Small delay to ensure animations feel smooth
-      setTimeout(() => {
-        setIsSubmitting(false);
-      }, 150);
+      setTimeout(() => setIsSubmitting(false), 150);
     }
   }
 
-  // Cleanup timeouts on unmount
-  useEffect(() => {
-    return () => {
-      if (sentAnimationTimeout.current) clearTimeout(sentAnimationTimeout.current);
-      if (confirmationAnimationTimeout.current) clearTimeout(confirmationAnimationTimeout.current);
-    };
+  useEffect(() => () => {
+    if (sentTimeout.current) clearTimeout(sentTimeout.current);
+    if (confirmTimeout.current) clearTimeout(confirmTimeout.current);
   }, []);
 
-  // Handle post-submission confirmation animation
   useEffect(() => {
     if (submitted) {
-      setShowConfirmationAnimation(true);
-      if (confirmationAnimationTimeout.current) clearTimeout(confirmationAnimationTimeout.current);
-      
-      confirmationAnimationTimeout.current = setTimeout(() => {
-        setShowConfirmationAnimation(false);
-      }, 2800);
+      setShowConfirmAnim(true);
+      if (confirmTimeout.current) clearTimeout(confirmTimeout.current);
+      confirmTimeout.current = setTimeout(() => setShowConfirmAnim(false), 2800);
     }
   }, [submitted]);
 
   return (
     <section id="contact" className="py-24 bg-slate-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Page heading */}
-        <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
-            Get In <span className="bg-gradient-to-r from-teal-400 via-cyan-400 to-violet-500 bg-clip-text text-transparent">Touch</span>
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center gap-2 bg-teal-500/10 border border-teal-500/20 rounded-full px-4 py-1.5 mb-6">
+            <span className="text-teal-400 text-sm font-medium">Contact Us</span>
+          </div>
+          <h2 className="text-4xl lg:text-5xl font-bold text-white mb-4">
+            Let's talk about{' '}
+            <span className="bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent">
+              BytesAttend
+            </span>
           </h2>
-          <p className="mt-6 max-w-3xl mx-auto text-lg text-slate-300">
-            Ready to transform your business? Let&rsquo;s discuss your project and create something
-            amazing together.
+          <p className="text-slate-400 text-lg max-w-xl mx-auto">
+            Request a demo, ask about pricing, or discuss how BytesAttend fits your institution.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-12">
-          {/* Left: Info cards */}
-          <div>
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-8">Let&rsquo;s Start a Conversation</h2>
-
-            <div className="space-y-4 mb-10">
-              {/* Email Card */}
-              <div className="group p-6 bg-slate-900/70 rounded-xl border border-white/10 shadow-lg flex gap-4 items-start transition-all duration-300 hover:-translate-y-1 hover:border-cyan-400/40">
-                <div className="relative shrink-0">
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-teal-400 via-cyan-400 to-blue-500 opacity-60 blur-md group-hover:opacity-80 transition-opacity"></div>
-                  <div className="relative h-12 w-12 rounded-2xl bg-slate-950/80 border border-white/10 flex items-center justify-center shadow-lg shadow-cyan-500/30">
-                    <Mail className="h-6 w-6 text-cyan-200" />
-                  </div>
+        <div className="grid lg:grid-cols-2 gap-12 items-start">
+          {/* Left */}
+          <div className="space-y-5">
+            {[
+              {
+                icon: Mail,
+                label: 'Email',
+                value: 'bytesflareinfotechsales@gmail.com',
+                href: 'mailto:bytesflareinfotechsales@gmail.com',
+                sub: 'Send us your requirements',
+                color: 'text-teal-400',
+              },
+              {
+                icon: Phone,
+                label: 'Phone / WhatsApp',
+                value: '+91-8799196162',
+                href: 'tel:+918799196162',
+                sub: 'Call or WhatsApp us',
+                color: 'text-cyan-400',
+              },
+              {
+                icon: Clock,
+                label: 'Business Hours',
+                value: 'Mon – Fri: 9:00 AM – 6:00 PM',
+                href: null,
+                sub: 'IST (India Standard Time)',
+                color: 'text-blue-400',
+              },
+              {
+                icon: MapPin,
+                label: 'Location',
+                value: 'Gujarat, India',
+                href: null,
+                sub: 'Bhavnagar, Gujarat',
+                color: 'text-violet-400',
+              },
+            ].map(({ icon: Icon, label, value, href, sub, color }) => (
+              <div
+                key={label}
+                className="flex items-start gap-4 bg-slate-900/60 border border-white/10 rounded-xl p-5 hover:border-white/20 transition-colors"
+              >
+                <div className={`w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center flex-shrink-0`}>
+                  <Icon className={`w-5 h-5 ${color}`} />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-slate-100">Email</p>
-                  <a
-                    href="mailto:bytesflareinfotechsales@gmail.com"
-                    className="text-white font-medium hover:text-cyan-200 transition-colors break-all"
-                  >
-                    bytesflareinfotechsales@gmail.com
-                  </a>
-                  <p className="text-slate-400 text-sm">Send us your project requirements</p>
-                </div>
-              </div>
-
-              {/* Phone Card */}
-              <div className="group p-6 bg-slate-900/70 rounded-xl border border-white/10 shadow-lg flex gap-4 items-start transition-all duration-300 hover:-translate-y-1 hover:border-cyan-400/40">
-                <div className="relative shrink-0">
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-amber-400 via-orange-400 to-pink-500 opacity-60 blur-md group-hover:opacity-80 transition-opacity"></div>
-                  <div className="relative h-12 w-12 rounded-2xl bg-slate-950/80 border border-white/10 flex items-center justify-center shadow-lg shadow-amber-500/30">
-                    <Phone className="h-6 w-6 text-amber-200" />
-                  </div>
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-slate-100">Let&rsquo;s Connect</p>
-                  <p className="text-white font-medium">Ready to discuss your project?</p>
-                  <p className="text-slate-400 text-sm">
-                    Call or WhatsApp us at{' '}
-                    <a
-                      href="tel:+918799196162"
-                      className="text-white font-semibold hover:text-amber-200 transition-colors"
-                    >
-                      +91-8799196162
+                  <div className="text-slate-500 text-xs mb-0.5">{label}</div>
+                  {href ? (
+                    <a href={href} className="text-white font-medium hover:text-teal-400 transition-colors text-sm break-all">
+                      {value}
                     </a>
-                  </p>
+                  ) : (
+                    <div className="text-white font-medium text-sm">{value}</div>
+                  )}
+                  <div className="text-slate-500 text-xs mt-0.5">{sub}</div>
                 </div>
               </div>
-
-              {/* Hours Card */}
-              <div className="group p-6 bg-slate-900/70 rounded-xl border border-white/10 shadow-lg flex gap-4 items-start transition-all duration-300 hover:-translate-y-1 hover:border-cyan-400/40">
-                <div className="relative shrink-0">
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-violet-400 via-indigo-400 to-blue-500 opacity-60 blur-md group-hover:opacity-80 transition-opacity"></div>
-                  <div className="relative h-12 w-12 rounded-2xl bg-slate-950/80 border border-white/10 flex items-center justify-center shadow-lg shadow-indigo-500/30">
-                    <Clock className="h-6 w-6 text-indigo-200" />
-                  </div>
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-slate-100">Business Hours</p>
-                  <p className="text-white font-medium">Mon - Fri: 9:00 AM - 6:00 PM</p>
-                  <p className="text-slate-400 text-sm">We&rsquo;re here to help you succeed</p>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-xl font-semibold text-white mb-4">Why Work With Us?</h3>
-              <ul className="space-y-3 text-slate-300">
-                <li className="flex items-start gap-3"><span className="mt-2 h-2 w-2 rounded-sm bg-amber-500 shrink-0" />Free consultation and project analysis</li>
-                <li className="flex items-start gap-3"><span className="mt-2 h-2 w-2 rounded-sm bg-amber-500 shrink-0" />Transparent pricing and timeline</li>
-                <li className="flex items-start gap-3"><span className="mt-2 h-2 w-2 rounded-sm bg-amber-500 shrink-0" />Ongoing support and maintenance</li>
-              </ul>
-            </div>
+            ))}
           </div>
 
-          {/* Right: Form */}
-          <div className="w-full">
-            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 mb-4">
-              <h3 className="text-2xl font-semibold text-white">Send Us a Message</h3>
-              <p className="text-sm text-slate-400">All fields are mandatory</p>
-            </div>
-            
+          {/* Right — Form */}
+          <div>
             {submitted ? (
-              <div className="relative overflow-hidden p-6 bg-gradient-to-br from-slate-900/90 via-slate-900 to-slate-950 rounded-2xl border border-white/10 shadow-lg shadow-teal-900/40 animate-in fade-in zoom-in duration-500">
-                <div className="absolute -top-10 -right-10 h-24 w-24 rounded-full bg-teal-500/30 blur-3xl animate-pulse"></div>
-                <div className="absolute -bottom-12 -left-6 h-20 w-20 rounded-full bg-cyan-500/30 blur-3xl animate-pulse delay-150"></div>
-                <div className="relative">
-                  <div className="flex items-center gap-4">
-                    <div className="relative h-16 w-16 flex items-center justify-center shrink-0">
-                      {showConfirmationAnimation && (
-                        <>
-                          <span className="absolute inset-0 rounded-full border border-teal-200/50 animate-ping"></span>
-                          <span className="absolute inset-1 rounded-full border border-cyan-200/40 animate-pulse"></span>
-                        </>
-                      )}
-                      <div className="relative h-14 w-14 rounded-full bg-gradient-to-br from-teal-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-teal-800/40">
-                        <CheckCircle2 className="h-8 w-8 text-white animate-[pop_0.5s_ease-out]" />
-                      </div>
-                    </div>
-                    <div>
-                      <h4 className="text-2xl font-bold text-white">Message Sent!</h4>
-                      <p className="text-slate-300">We received your details and will get back shortly.</p>
+              <div className="relative overflow-hidden p-8 bg-slate-900/60 border border-white/10 rounded-2xl">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="relative w-14 h-14 flex items-center justify-center flex-shrink-0">
+                    {showConfirmAnim && (
+                      <span className="absolute inset-0 rounded-full border border-teal-400/40 animate-ping" />
+                    )}
+                    <div className="w-12 h-12 rounded-full bg-teal-500/20 border border-teal-500/30 flex items-center justify-center">
+                      <CheckCircle2 className="w-7 h-7 text-teal-400" />
                     </div>
                   </div>
-                  {showConfirmationAnimation && (
-                    <div className="mt-6 flex gap-2 justify-center sm:justify-start">
-                      <span className="h-2 w-2 rounded-full bg-teal-300 animate-bounce"></span>
-                      <span className="h-2 w-2 rounded-full bg-cyan-300 animate-bounce delay-100"></span>
-                      <span className="h-2 w-2 rounded-full bg-blue-300 animate-bounce delay-200"></span>
-                      <span className="h-2 w-2 rounded-full bg-teal-300 animate-bounce delay-300"></span>
-                    </div>
-                  )}
-                  
-                  {/* Option to send another message */}
-                  <div className="mt-8">
-                     <Button 
-                       onClick={() => setSubmitted(false)}
-                       variant="outline"
-                       className="border-white/20 text-slate-300 hover:bg-white/5 hover:text-white"
-                     >
-                       Send another message
-                     </Button>
+                  <div>
+                    <h4 className="text-white font-bold text-xl">Message Sent</h4>
+                    <p className="text-slate-400 text-sm">We'll get back to you shortly.</p>
                   </div>
                 </div>
+                <Button
+                  onClick={() => setSubmitted(false)}
+                  className="border border-white/10 bg-transparent text-slate-400 hover:text-white hover:bg-white/5 text-sm"
+                >
+                  Send another message
+                </Button>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="p-6 bg-slate-900/70 rounded-xl border border-white/10 shadow-lg space-y-5">
-                <div className="grid md:grid-cols-2 gap-5">
+              <form
+                onSubmit={handleSubmit}
+                className="bg-slate-900/60 border border-white/10 rounded-2xl p-8 space-y-5"
+              >
+                <div className="grid sm:grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-sm font-semibold text-slate-200 mb-1.5">Full Name *</label>
-                    <Input 
-                      name="name" 
-                      value={formData.name} 
-                      onChange={handleChange} 
-                      placeholder="Your full name" 
-                      required 
-                      className="bg-slate-950 border-white/20 text-white placeholder:text-slate-500 focus:border-cyan-400/50 text-base md:text-sm" 
+                    <label className="block text-slate-300 text-sm font-medium mb-1.5">Full Name *</label>
+                    <Input
+                      name="name"
+                      value={form.name}
+                      onChange={handleChange}
+                      placeholder="Your name"
+                      required
+                      className="bg-slate-950 border-white/10 text-white placeholder:text-slate-600 focus:border-teal-500/50"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-slate-200 mb-1.5">Phone Number *</label>
+                    <label className="block text-slate-300 text-sm font-medium mb-1.5">Phone *</label>
                     <Input
                       name="phone"
-                      value={formData.phone}
+                      value={form.phone}
                       onChange={handleChange}
                       placeholder="+91 XXXXX XXXXX"
                       required
-                      className="bg-slate-950 border-white/20 text-white placeholder:text-slate-500 focus:border-cyan-400/50 text-base md:text-sm"
+                      className="bg-slate-950 border-white/10 text-white placeholder:text-slate-600 focus:border-teal-500/50"
                     />
                   </div>
                 </div>
-
                 <div>
-                  <label className="block text-sm font-semibold text-slate-200 mb-1.5">Email Address *</label>
-                  <Input 
-                    type="email" 
-                    name="email" 
-                    value={formData.email} 
-                    onChange={handleChange} 
-                    placeholder="your.email@example.com" 
-                    required 
-                    className="bg-slate-950 border-white/20 text-white placeholder:text-slate-500 focus:border-cyan-400/50 text-base md:text-sm" 
+                  <label className="block text-slate-300 text-sm font-medium mb-1.5">Email *</label>
+                  <Input
+                    type="email"
+                    name="email"
+                    value={form.email}
+                    onChange={handleChange}
+                    placeholder="your@email.com"
+                    required
+                    className="bg-slate-950 border-white/10 text-white placeholder:text-slate-600 focus:border-teal-500/50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-300 text-sm font-medium mb-1.5">Message *</label>
+                  <Textarea
+                    name="message"
+                    value={form.message}
+                    onChange={handleChange}
+                    placeholder="Tell us about your institution and what you need..."
+                    required
+                    rows={5}
+                    className="bg-slate-950 border-white/10 text-white placeholder:text-slate-600 focus:border-teal-500/50 resize-none"
                   />
                 </div>
 
-                
-                <div>
-                  <label className="block text-sm font-semibold text-slate-200 mb-1.5">Message *</label>
-                  <Textarea 
-                    name="message" 
-                    value={formData.message} 
-                    onChange={handleChange} 
-                    placeholder="Tell us about your project requirements..." 
-                    required 
-                    rows={6} 
-                    className="bg-slate-950 border-white/20 text-white placeholder:text-slate-500 focus:border-cyan-400/50 resize-none text-base md:text-sm" 
-                  />
-                </div>
-
-                <div className="relative pt-2">
+                <div className="relative">
                   <Button
                     type="submit"
                     disabled={isSubmitting || showSentAnimation}
-                    className="w-full h-12 bg-gradient-to-r from-teal-500 to-cyan-500 hover:opacity-90 text-white font-semibold disabled:opacity-70 disabled:cursor-not-allowed transition-all"
+                    className="w-full h-12 bg-teal-500 hover:bg-teal-400 text-white font-semibold disabled:opacity-60 transition-all hover:shadow-[0_0_20px_rgba(20,184,166,0.4)]"
                   >
                     {isSubmitting ? (
-                       <span className="inline-flex items-center gap-2">
-                         <Loader2 className="h-5 w-5 animate-spin" /> Sending...
-                       </span>
+                      <span className="flex items-center gap-2"><Loader2 className="w-4 h-4 animate-spin" /> Sending...</span>
                     ) : (
-                      <span className="inline-flex items-center gap-2">
-                        <Send className="h-5 w-5" /> Send Message
-                      </span>
+                      <span className="flex items-center gap-2"><Send className="w-4 h-4" /> Send Message</span>
                     )}
                   </Button>
-                  
-                  {/* Success Animation Overlay */}
                   {showSentAnimation && (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none bg-slate-900/80 rounded-md backdrop-blur-sm z-10">
-                      <div className="relative flex items-center justify-center">
-                        <span className="absolute inline-flex h-12 w-12 rounded-full border border-teal-200/40 animate-ping"></span>
-                        <span className="absolute inline-flex h-16 w-16 rounded-full border border-cyan-200/30 animate-pulse"></span>
-                        <Send className="relative h-8 w-8 text-cyan-400 animate-bounce" />
-                      </div>
-                      <p className="mt-3 text-sm font-semibold text-teal-100 tracking-wide animate-pulse">Message Sent!</p>
+                    <div className="absolute inset-0 flex items-center justify-center bg-slate-900/80 rounded-md backdrop-blur-sm">
+                      <Send className="w-6 h-6 text-teal-400 animate-bounce" />
                     </div>
                   )}
                 </div>
-                
+
                 {statusMessage && (
-                  <div className={`p-3 rounded-md text-center text-sm font-medium animate-in fade-in slide-in-from-top-1 ${statusMessage.includes("❌") ? "bg-red-500/10 text-red-200 border border-red-500/20" : "bg-teal-500/10 text-teal-200 border border-teal-500/20"}`}>
+                  <div className={`p-3 rounded-lg text-center text-sm font-medium ${statusMessage.includes('❌') ? 'bg-red-500/10 text-red-300 border border-red-500/20' : 'bg-teal-500/10 text-teal-300 border border-teal-500/20'}`}>
                     {statusMessage}
                   </div>
                 )}
@@ -346,5 +262,5 @@ export function Contact() {
         </div>
       </div>
     </section>
-      );
+  );
 }

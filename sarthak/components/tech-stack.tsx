@@ -1,146 +1,113 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-import { Smartphone, Database, Cloud, Cpu, Shield } from 'lucide-react';
-
-// Bytesflare Infotech — Focused Flutter + Firebase Product Stack
-const techCategories = [
+const stack = [
   {
-    icon: Smartphone,
-    title: 'Frontend (Mobile & Web)',
-    technologies: [
-      'Flutter',
-      'Flutter Web',
-      'Material UI',
-      'Cupertino UI',
-      'Responsive Design'
-    ]
+    category: 'Frontend',
+    color: 'teal',
+    items: [
+      { name: 'Flutter Web', desc: 'Web admin & teacher dashboard' },
+      { name: 'Flutter Mobile', desc: 'Android & iOS student/teacher app' },
+      { name: 'Material UI', desc: 'Consistent design system' },
+    ],
   },
   {
-    icon: Database,
-    title: 'Backend & Database',
-    technologies: [
-      'Firebase',
-      'Cloud Firestore',
-      'Firebase Realtime Database',
-      'Firebase Functions',
-      'Firebase Storage'
-    ]
+    category: 'Backend & Database',
+    color: 'cyan',
+    items: [
+      { name: 'Firebase Firestore', desc: 'Real-time NoSQL database' },
+      { name: 'Firebase Auth', desc: 'Email/password authentication' },
+      { name: 'Cloud Functions', desc: 'Node.js scheduled jobs (midnight IST)' },
+    ],
   },
   {
-    icon: Cloud,
-    title: 'Authentication & Infrastructure',
-    technologies: [
-      'Firebase Authentication',
-      'OTP & Phone Auth',
-      'Email & Password Auth',
-      'Role-Based Access Control',
-      'Serverless Architecture'
-    ]
+    category: 'AI & Verification',
+    color: 'blue',
+    items: [
+      { name: 'Custom AI API', desc: 'Liveness detection + anti-spoofing' },
+      { name: 'Google ML Kit', desc: 'On-device face detection' },
+      { name: 'Face Matching', desc: 'Similarity score verification' },
+    ],
   },
   {
-    icon: Cpu,
-    title: 'Real-Time Systems',
-    technologies: [
-      'QR Code Attendance',
-      'Live Session Tracking',
-      'Real-Time Sync',
-      'Offline Support',
-      'Instant Data Updates'
-    ]
+    category: 'Infrastructure',
+    color: 'violet',
+    items: [
+      { name: 'Firebase Hosting', desc: 'Web app deployment' },
+      { name: 'Firebase Storage', desc: 'Profile photos & project files' },
+      { name: 'Remote Config', desc: 'Feature flags & API endpoint control' },
+    ],
   },
   {
-    icon: Shield,
-    title: 'Security & Reliability',
-    technologies: [
-      'Firestore Security Rules',
-      'Encrypted Data Storage',
-      'User Access Control',
-      'Audit Logs',
-      'Scalable Architecture'
-    ]
-  }
+    category: 'Device & Notifications',
+    color: 'amber',
+    items: [
+      { name: 'GPS / Geolocation', desc: '20m geo-fencing per session' },
+      { name: 'Firebase FCM', desc: 'Push notifications' },
+      { name: 'Text-to-Speech', desc: 'Audio attendance confirmation' },
+    ],
+  },
+  {
+    category: 'Export & Compliance',
+    color: 'emerald',
+    items: [
+      { name: 'Excel (.xlsx)', desc: 'Bulk import & report export' },
+      { name: 'PDF Export', desc: 'Attendance reports & summaries' },
+      { name: 'NAAC/IQAC Ready', desc: 'Audit-friendly data schema' },
+    ],
+  },
 ];
 
+const colorMap: Record<string, string> = {
+  teal: 'border-teal-500/20 bg-teal-500/5 text-teal-400',
+  cyan: 'border-cyan-500/20 bg-cyan-500/5 text-cyan-400',
+  blue: 'border-blue-500/20 bg-blue-500/5 text-blue-400',
+  violet: 'border-violet-500/20 bg-violet-500/5 text-violet-400',
+  amber: 'border-amber-500/20 bg-amber-500/5 text-amber-400',
+  emerald: 'border-emerald-500/20 bg-emerald-500/5 text-emerald-400',
+};
+
 export function TechStack() {
-  const sectionRef = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('animate-fade-in-up');
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    const cards = sectionRef.current?.querySelectorAll('.tech-card');
-    cards?.forEach((card) => observer.observe(card));
-
-    return () => observer.disconnect();
-  }, []);
-
   return (
-    <section ref={sectionRef} className="py-24 bg-slate-950">
+    <section className="py-24 bg-slate-900/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Heading */}
         <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
-            Our Product <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-cyan-500">Technology Stack</span>
+          <div className="inline-flex items-center gap-2 bg-teal-500/10 border border-teal-500/20 rounded-full px-4 py-1.5 mb-6">
+            <span className="text-teal-400 text-sm font-medium">Technology Stack</span>
+          </div>
+          <h2 className="text-4xl lg:text-5xl font-bold text-white mb-4">
+            Built on a{' '}
+            <span className="bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent">
+              focused stack
+            </span>
           </h2>
-          <p className="text-xl text-slate-300 max-w-3xl mx-auto">
-            Bytesflare Infotech builds powerful, real-time, and scalable products
-            using a focused Flutter & Firebase ecosystem.
+          <p className="text-slate-400 text-lg max-w-2xl mx-auto">
+            Flutter + Firebase at the core, with AI verification, GPS tracking, and cloud-native infrastructure.
           </p>
         </div>
 
-        {/* Tech Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {techCategories.map((category, index) => (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {stack.map(({ category, color, items }) => (
             <div
-              key={index}
-              className="tech-card opacity-0 bg-slate-900/70 p-8 rounded-2xl shadow-lg hover:shadow-cyan-500/30 transition-all duration-300 hover:-translate-y-1 border border-white/10 backdrop-blur"
-              style={{ animationDelay: `${index * 0.1}s` }}
+              key={category}
+              className="bg-slate-900/60 border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-colors duration-300"
             >
-              <div className="w-16 h-16 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-2xl flex items-center justify-center mb-6 shadow shadow-cyan-500/30">
-                <category.icon className="w-8 h-8 text-white" />
+              <div className={`inline-flex items-center gap-2 border rounded-full px-3 py-1 text-xs font-semibold mb-5 ${colorMap[color]}`}>
+                {category}
               </div>
-              
-              <h3 className="text-xl font-bold text-white mb-6">
-                {category.title}
-              </h3>
-
-              <div className="flex flex-wrap gap-2">
-                {category.technologies.map((tech, idx) => (
-                  <span
-                    key={idx}
-                    className="px-3 py-1 bg-white/10 text-teal-200 rounded-full text-sm font-medium hover:bg-teal-500/20 transition-colors cursor-default"
-                  >
-                    {tech}
-                  </span>
+              <div className="space-y-3">
+                {items.map(({ name, desc }) => (
+                  <div key={name} className="flex items-start gap-3">
+                    <span className="w-1.5 h-1.5 rounded-full bg-slate-500 mt-2 flex-shrink-0" />
+                    <div>
+                      <span className="text-white text-sm font-medium">{name}</span>
+                      <span className="text-slate-500 text-xs ml-2">— {desc}</span>
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>
           ))}
         </div>
-
-        {/* Security Banner */}
-        <div className="mt-16 text-center">
-          <div className="bg-gradient-to-r from-teal-500 to-blue-600 p-8 rounded-2xl text-white shadow-lg shadow-teal-500/30">
-            <Shield className="w-12 h-12 mx-auto mb-4" />
-            <h3 className="text-2xl font-bold mb-4">Built for Scale & Security</h3>
-            <p className="text-lg opacity-90 max-w-2xl mx-auto">
-              Our Flutter & Firebase architecture ensures real-time performance,
-              enterprise-grade security, and effortless scalability for thousands
-              of users.
-            </p>
-          </div>
-        </div>
-
       </div>
     </section>
   );

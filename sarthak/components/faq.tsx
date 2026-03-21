@@ -1,115 +1,88 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 
 const faqs = [
   {
-    question: 'What does Bytesflare Infotech specialize in?',
-    answer:
-      'Bytesflare Infotech is a product-focused technology company building scalable mobile-first SaaS platforms using Flutter and Firebase. Our primary focus is real-time systems such as attendance management, ERP platforms, workforce tracking, and institutional digital solutions.'
+    q: 'What is BytesAttend?',
+    a: 'BytesAttend is a cloud-based attendance management platform built for educational institutions. It combines a Flutter Web admin dashboard with a Flutter mobile app, powered by Firebase, to automate attendance tracking with QR codes, AI face verification, and GPS geo-fencing.',
   },
   {
-    question: 'What kind of products do you build?',
-    answer:
-      'We build secure, cloud-based products including attendance systems, ERP modules, student and workforce management platforms, and custom enterprise applications. Our flagship product, BytesAttend, is designed for institutions and organizations that need real-time, reliable attendance and session tracking.'
+    q: 'How does face verification work?',
+    a: 'When a student marks attendance, the mobile app captures 2 face images 500ms apart. These are sent to a custom AI API that performs liveness detection, anti-spoofing checks, and face similarity matching. If verification fails, attendance is rejected. Re-verification is required if the app is inactive for more than 10 minutes.',
   },
   {
-    question: 'Which technologies do you use?',
-    answer:
-      'We intentionally use a focused technology stack consisting only of Flutter for frontend development and Firebase for backend, database, authentication, and real-time infrastructure. This allows us to deliver faster, more reliable, and highly scalable products.'
+    q: 'What is the geo-fencing feature?',
+    a: 'Attendance can only be marked within 20 meters of the teacher\'s GPS location. The system records GPS coordinates and a timestamp for every attendance entry, preventing remote or proxy marking.',
   },
   {
-    question: 'Why do you use only Flutter and Firebase?',
-    answer:
-      'By standardizing on Flutter and Firebase, we ensure consistency, performance, security, and faster development cycles. This focused stack enables real-time synchronization, offline support, strong security rules, and seamless scalability for thousands of users.'
+    q: 'How are sessions generated automatically?',
+    a: 'A Firebase Cloud Function runs daily at midnight IST. It reads the configured weekly timetable and generates sessions for each course, semester, division, and subject. Deterministic session IDs prevent duplicate generation.',
   },
   {
-    question: 'Is BytesAttend customizable for institutions or companies?',
-    answer:
-      'Yes. BytesAttend is designed as a modular product. Institutions and organizations can configure roles, permissions, attendance rules, session logic, and reporting without changing the core system.'
+    q: 'Does BytesAttend support multiple universities?',
+    a: 'Yes. BytesAttend uses a multi-tenant architecture where each university has a unique code and fully isolated data. A Super Admin manages all universities, subscriptions, and global settings from a single platform.',
   },
   {
-    question: 'Do you provide long-term support and updates?',
-    answer:
-      'Absolutely. We provide continuous product updates, performance improvements, security enhancements, and feature upgrades. Our systems are monitored and improved regularly to ensure reliability and long-term value.'
+    q: 'What subscription plans are available?',
+    a: 'Each university operates under a subscription plan that includes deployment type (Testing/Production), duration (15 days, 30 days, or 1–3 years), and a user limit. Subscription status is checked at login with expiry warnings shown in advance.',
   },
   {
-    question: 'How secure are your products?',
-    answer:
-      'Security is built into our architecture. We use Firebase Authentication, role-based access control, Firestore security rules, encrypted data storage, and audit-friendly data structures to ensure enterprise-grade protection.'
+    q: 'Can we export attendance reports?',
+    a: 'Yes. BytesAttend supports export to both PDF and Excel. Reports include attendance summaries, subject-wise breakdowns, monthly reports, and semester reports — all in NAAC/IQAC audit-ready format.',
   },
   {
-    question: 'Can your products scale for large institutions?',
-    answer:
-      'Yes. Our Flutter + Firebase architecture is designed to scale seamlessly from small teams to large institutions with thousands of concurrent users, real-time updates, and minimal latency.'
+    q: 'How does bulk user import work?',
+    a: 'Admins upload an Excel template with student or teacher data. The backend creates Firebase Authentication accounts and Firestore records in batch. This works for both individual and bulk additions.',
   },
   {
-    question: 'Do you offer demos or pilot deployments?',
-    answer:
-      'Yes. We provide product demos and pilot deployments for institutions and organizations interested in evaluating BytesAttend or our upcoming platforms before full adoption.'
+    q: 'Is BytesAttend NAAC compliant?',
+    a: 'BytesAttend maintains attendance records in a consistent schema designed for NAAC/NBA audit requirements. Reports are generated automatically with the data structure needed for institutional accreditation.',
   },
   {
-    question: 'Is Bytesflare Infotech a service company or product company?',
-    answer:
-      'Bytesflare Infotech is a product-driven company. Our primary focus is building, scaling, and continuously improving our own SaaS products rather than offering generic development services.'
-  }
+    q: 'What happens during maintenance?',
+    a: 'Maintenance mode is controlled via Firestore and applies globally to all users in real time — no redeployment required. When active, all users see a maintenance screen on app launch.',
+  },
 ];
 
 export function FAQ() {
-  const [openItems, setOpenItems] = useState<number[]>([]);
-
-  const toggleItem = (index: number) => {
-    setOpenItems((prev) =>
-      prev.includes(index)
-        ? prev.filter((item) => item !== index)
-        : [...prev, index]
-    );
-  };
+  const [open, setOpen] = useState<number | null>(null);
 
   return (
     <section className="py-24 bg-slate-950">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
-            Frequently Asked{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-purple-500">
-              Questions
+          <div className="inline-flex items-center gap-2 bg-teal-500/10 border border-teal-500/20 rounded-full px-4 py-1.5 mb-6">
+            <span className="text-teal-400 text-sm font-medium">FAQ</span>
+          </div>
+          <h2 className="text-4xl lg:text-5xl font-bold text-white mb-4">
+            Common{' '}
+            <span className="bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent">
+              questions
             </span>
           </h2>
-          <p className="text-xl text-slate-300 max-w-2xl mx-auto">
-            Everything you need to know about Bytesflare Infotech and our
-            Flutter-powered SaaS products.
-          </p>
+          <p className="text-slate-400 text-lg">Everything you need to know about BytesAttend.</p>
         </div>
 
-        <div className="space-y-4">
-          {faqs.map((faq, index) => (
+        <div className="space-y-3">
+          {faqs.map((faq, i) => (
             <div
-              key={index}
-              className="bg-slate-900/70 rounded-2xl overflow-hidden hover:shadow-cyan-500/20 transition-all duration-300 border border-white/10"
+              key={i}
+              className="bg-slate-900/60 border border-white/10 rounded-xl overflow-hidden hover:border-white/20 transition-colors"
             >
               <button
-                onClick={() => toggleItem(index)}
-                className="w-full px-8 py-6 text-left flex items-center justify-between hover:bg-white/5 transition-colors"
+                onClick={() => setOpen(open === i ? null : i)}
+                className="w-full flex items-center justify-between px-6 py-5 text-left"
               >
-                <h3 className="text-lg font-semibold text-slate-100 pr-4">
-                  {faq.question}
-                </h3>
-                {openItems.includes(index) ? (
-                  <ChevronUp className="w-6 h-6 text-teal-400 flex-shrink-0" />
-                ) : (
-                  <ChevronDown className="w-6 h-6 text-slate-500 flex-shrink-0" />
-                )}
+                <span className="text-white font-medium pr-4">{faq.q}</span>
+                <ChevronDown
+                  className={`w-5 h-5 text-slate-400 flex-shrink-0 transition-transform duration-200 ${open === i ? 'rotate-180 text-teal-400' : ''}`}
+                />
               </button>
-
-              {openItems.includes(index) && (
-                <div className="px-8 pb-6">
-                  <div className="border-t border-white/10 pt-4">
-                    <p className="text-slate-300 leading-relaxed">
-                      {faq.answer}
-                    </p>
-                  </div>
+              {open === i && (
+                <div className="px-6 pb-5 border-t border-white/5">
+                  <p className="text-slate-400 leading-relaxed pt-4 text-sm">{faq.a}</p>
                 </div>
               )}
             </div>
