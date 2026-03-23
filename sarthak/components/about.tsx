@@ -55,7 +55,7 @@ export function About() {
 
             <div className="grid grid-cols-2 gap-3">
               {[
-                { value: '2023', label: 'Founded' },
+                { value: '2025', label: 'Founded' },
                 { value: 'Gujarat', label: 'Based in India' },
                 { value: 'SaaS', label: 'Product Focus' },
                 { value: '24/7', label: 'Cloud Availability' },
