@@ -77,20 +77,21 @@ export function Contact() {
   }, [submitted]);
 
   return (
-    <section id="contact" className="py-24 bg-slate-950">
+    <section id="contact" className="py-28 bg-[#05081a] relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 bg-teal-500/10 border border-teal-500/20 rounded-full px-4 py-1.5 mb-6">
-            <span className="text-teal-400 text-sm font-medium">Contact Us</span>
+          <div className="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 rounded-full px-4 py-1.5 mb-7">
+            <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full" />
+            <span className="text-indigo-300 text-sm font-medium">Contact Us</span>
           </div>
-          <h2 className="text-4xl lg:text-5xl font-bold text-white mb-4">
-            Let's talk about{' '}
-            <span className="bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent">
-              BytesAttend
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 tracking-tight">
+            Let&apos;s talk about{' '}
+            <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">
+              your needs
             </span>
           </h2>
           <p className="text-slate-400 text-lg max-w-xl mx-auto">
-            Request a demo, ask about pricing, or discuss how BytesAttend fits your institution.
+            Request a demo, ask about pricing, or discuss how our platforms fit your institution or business.
           </p>
         </div>
 
@@ -133,9 +134,9 @@ export function Contact() {
             ].map(({ icon: Icon, label, value, href, sub, color }) => (
               <div
                 key={label}
-                className="flex items-start gap-4 bg-slate-900/60 border border-white/10 rounded-xl p-5 hover:border-white/20 transition-colors"
+                className="flex items-start gap-4 bg-white/[0.03] border border-white/[0.07] rounded-xl p-5 hover:border-indigo-500/25 hover:bg-white/[0.05] transition-all duration-300"
               >
-                <div className={`w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center flex-shrink-0`}>
+                <div className="w-10 h-10 bg-white/[0.06] rounded-lg flex items-center justify-center flex-shrink-0">
                   <Icon className={`w-5 h-5 ${color}`} />
                 </div>
                 <div>
@@ -156,7 +157,7 @@ export function Contact() {
           {/* Right — Form */}
           <div>
             {submitted ? (
-              <div className="relative overflow-hidden p-8 bg-slate-900/60 border border-white/10 rounded-2xl">
+              <div className="relative overflow-hidden p-5 sm:p-8 bg-white/[0.03] border border-white/[0.07] rounded-2xl">
                 <div className="flex items-center gap-4 mb-4">
                   <div className="relative w-14 h-14 flex items-center justify-center flex-shrink-0">
                     {showConfirmAnim && (
@@ -181,34 +182,34 @@ export function Contact() {
             ) : (
               <form
                 onSubmit={handleSubmit}
-                className="bg-slate-900/60 border border-white/10 rounded-2xl p-8 space-y-5"
+                className="bg-white/[0.03] border border-white/[0.07] rounded-2xl p-5 sm:p-8 space-y-5"
               >
                 <div className="grid sm:grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-slate-300 text-sm font-medium mb-1.5">Full Name *</label>
+                    <label className="block text-slate-400 text-sm font-medium mb-1.5">Full Name *</label>
                     <Input
                       name="name"
                       value={form.name}
                       onChange={handleChange}
                       placeholder="Your name"
                       required
-                      className="bg-slate-950 border-white/10 text-white placeholder:text-slate-600 focus:border-teal-500/50"
+                      className="bg-[#07091e] border-white/[0.08] text-white placeholder:text-slate-700 focus:border-indigo-500/50"
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-300 text-sm font-medium mb-1.5">Phone *</label>
+                    <label className="block text-slate-400 text-sm font-medium mb-1.5">Phone *</label>
                     <Input
                       name="phone"
                       value={form.phone}
                       onChange={handleChange}
                       placeholder="+91 XXXXX XXXXX"
                       required
-                      className="bg-slate-950 border-white/10 text-white placeholder:text-slate-600 focus:border-teal-500/50"
+                      className="bg-[#07091e] border-white/[0.08] text-white placeholder:text-slate-700 focus:border-indigo-500/50"
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-slate-300 text-sm font-medium mb-1.5">Email *</label>
+                  <label className="block text-slate-400 text-sm font-medium mb-1.5">Email *</label>
                   <Input
                     type="email"
                     name="email"
@@ -216,11 +217,11 @@ export function Contact() {
                     onChange={handleChange}
                     placeholder="your@email.com"
                     required
-                    className="bg-slate-950 border-white/10 text-white placeholder:text-slate-600 focus:border-teal-500/50"
+                    className="bg-[#07091e] border-white/[0.08] text-white placeholder:text-slate-700 focus:border-indigo-500/50"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-300 text-sm font-medium mb-1.5">Message *</label>
+                  <label className="block text-slate-400 text-sm font-medium mb-1.5">Message *</label>
                   <Textarea
                     name="message"
                     value={form.message}
@@ -228,7 +229,7 @@ export function Contact() {
                     placeholder="Tell us about your institution and what you need..."
                     required
                     rows={5}
-                    className="bg-slate-950 border-white/10 text-white placeholder:text-slate-600 focus:border-teal-500/50 resize-none"
+                    className="bg-[#07091e] border-white/[0.08] text-white placeholder:text-slate-700 focus:border-indigo-500/50 resize-none"
                   />
                 </div>
 
@@ -236,7 +237,7 @@ export function Contact() {
                   <Button
                     type="submit"
                     disabled={isSubmitting || showSentAnimation}
-                    className="w-full h-12 bg-teal-500 hover:bg-teal-400 text-white font-semibold disabled:opacity-60 transition-all hover:shadow-[0_0_20px_rgba(20,184,166,0.4)]"
+                    className="w-full h-12 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold disabled:opacity-60 transition-all shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:shadow-[0_0_30px_rgba(99,102,241,0.5)] border-0"
                   >
                     {isSubmitting ? (
                       <span className="flex items-center gap-2"><Loader2 className="w-4 h-4 animate-spin" /> Sending...</span>

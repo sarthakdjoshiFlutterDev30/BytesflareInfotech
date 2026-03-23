@@ -1,37 +1,43 @@
 'use client';
 
+import { useState } from 'react';
+import { Loader } from '@/components/loader';
 import { Navigation } from '@/components/navigation';
 import { Hero } from '@/components/hero';
 import { About } from '@/components/about';
-import { Stats } from '@/components/stats';
-import { Services } from '@/components/services';
+import { Products } from '@/components/products';
 import { Process } from '@/components/process';
-import { Portfolio } from '@/components/portfolio';
-import { TrustSignals } from '@/components/trust-signals';
+import { UseCases } from '@/components/use-cases';
 import { TechStack } from '@/components/tech-stack';
-import { FAQ } from '@/components/faq';
-import { Careers } from '@/components/careers';
+import { Vision } from '@/components/vision';
+import { CTA } from '@/components/cta';
 import { Contact } from '@/components/contact';
 import { Footer } from '@/components/footer';
 
 export default function Home() {
+  const [loaded, setLoaded] = useState(false);
+
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
-      <Navigation />
-      <main>
-        <Hero />
-        <Stats />
-        <About />
-        <Services />
-        <Process />
-        <Portfolio />
-        <TrustSignals />
-        <TechStack />
-        <FAQ />
-        <Careers />
-        <Contact />
-      </main>
-      <Footer />
-    </div>
+    <>
+      <Loader onDone={() => setLoaded(true)} />
+
+      {loaded && (
+        <div className="min-h-screen bg-[#05081a] text-slate-100">
+          <Navigation />
+          <main>
+            <Hero />
+            <About />
+            <Products />
+            <Process />
+            <UseCases />
+            <TechStack />
+            <Vision />
+            <CTA />
+            <Contact />
+          </main>
+          <Footer />
+        </div>
+      )}
+    </>
   );
 }

@@ -35,7 +35,7 @@ export default function RootLayout({
           })(window,document,'script','dataLayer','GTM-NWCMPVT5');
         `}
       </Script>
-      <body className="bg-slate-950 text-slate-100 antialiased">
+      <body className="bg-[#05081a] text-slate-100 antialiased">
         <noscript
           dangerouslySetInnerHTML={{
             __html: `
