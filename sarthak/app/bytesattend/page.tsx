@@ -81,8 +81,8 @@ export default function BytesAttendPage() {
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { icon: Shield, role: 'Super Admin', desc: 'Platform-level control — manages universities, subscriptions, and global settings.', color: 'violet' },
-              { icon: Building2, role: 'University Admin (HOD)', desc: 'Manages courses, users, subjects, timetables, and reports within a university.', color: 'teal' },
+              { icon: Shield, role: 'Super Admin (University Admin )', desc: 'Platform-level control — manages universities, subscriptions, and global settings.', color: 'violet' },
+              { icon: Building2, role: 'Admin (HOD)', desc: 'Manages courses, users, subjects, timetables, and reports within a university.', color: 'teal' },
               { icon: Users, role: 'Teacher', desc: 'Creates sessions, generates QR codes, marks attendance, and manages assigned students.', color: 'cyan' },
               { icon: GraduationCap, role: 'Student', desc: 'Views attendance summaries, subject reports, and marks attendance via mobile app.', color: 'blue' },
             ].map(({ icon: Icon, role, desc, color }) => (

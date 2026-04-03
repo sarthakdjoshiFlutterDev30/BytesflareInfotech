@@ -1,498 +1,505 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import * as THREE from 'three';
+import { useEffect, useRef, useState, useCallback } from 'react';
+import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion';
 
-/* ─── Timing ───────────────────────────────────────────────── */
-const PHASES = [
-  { label: 'Initialising biometric engine…',  pct: 0.00 },
-  { label: 'Mapping facial geometry…',         pct: 0.18 },
-  { label: 'Detecting 468 landmarks…',         pct: 0.36 },
-  { label: 'Running liveness detection…',      pct: 0.52 },
-  { label: 'Identity verified  ✓',             pct: 0.64 },
-  { label: 'Encrypting & uploading to cloud…', pct: 0.74 },
-  { label: 'Syncing attendance record…',       pct: 0.86 },
-  { label: 'Dashboard ready.',                 pct: 0.95 },
+/* ─── Sequence ─────────────────────────────────────────────── */
+const SEQ = [
+  { t: 0.00, label: 'Initialising biometric engine', sub: 'Loading neural weights…' },
+  { t: 0.14, label: 'Mapping facial geometry', sub: 'Building 3D depth map…' },
+  { t: 0.28, label: 'Detecting 468 landmarks', sub: 'Triangulating mesh nodes…' },
+  { t: 0.44, label: 'Running liveness detection', sub: 'Anti-spoofing check active…' },
+  { t: 0.58, label: 'Identity verified', sub: 'Confidence: 99.8% · Match found' },
+  { t: 0.70, label: 'Encrypting biometric payload', sub: 'AES-256-GCM · TLS 1.3 tunnel…' },
+  { t: 0.82, label: 'Syncing attendance record', sub: 'Writing to cloud ledger…' },
+  { t: 0.93, label: 'Dashboard ready', sub: 'All systems operational' },
 ];
-const TOTAL_MS = 7200;
+const TOTAL = 7000;
 
-/* ─── Helpers ──────────────────────────────────────────────── */
-function lerp(a: number, b: number, t: number) { return a + (b - a) * t; }
-function clamp01(v: number) { return Math.max(0, Math.min(1, v)); }
-function invlerp(a: number, b: number, v: number) { return clamp01((v - a) / (b - a)); }
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+const c01 = (v: number) => Math.max(0, Math.min(1, v));
+const iL = (a: number, b: number, v: number) => c01((v - a) / (b - a));
+const easeO = (t: number) => 1 - Math.pow(1 - t, 3);
+const easeIO = (t: number) => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
 
-/* ─── Build the Three.js scene ─────────────────────────────── */
-function buildScene(canvas: HTMLCanvasElement) {
-  const W = canvas.clientWidth  || window.innerWidth;
-  const H = canvas.clientHeight || window.innerHeight;
-
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setSize(W, H, false);
-  renderer.setClearColor(0x000000, 0);
-  renderer.shadowMap.enabled = true;
-
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(48, W / H, 0.1, 200);
-  camera.position.set(0, 0.1, 5.2);
-
-  /* ── Lights ── */
-  scene.add(new THREE.AmbientLight(0x1a1040, 1.2));
-
-  const keyLight = new THREE.PointLight(0x818cf8, 4, 18);
-  keyLight.position.set(0, 2.5, 4);
-  scene.add(keyLight);
-
-  const fillLight = new THREE.PointLight(0xa78bfa, 2, 14);
-  fillLight.position.set(-3, 0, 2);
-  scene.add(fillLight);
-
-  const rimLight = new THREE.PointLight(0x38bdf8, 1.5, 12);
-  rimLight.position.set(3, -1, 1);
-  scene.add(rimLight);
-
-  const verifyLight = new THREE.PointLight(0x34d399, 0, 14);
-  verifyLight.position.set(0, 0, 3.5);
-  scene.add(verifyLight);
-
-  /* ── Face mesh — higher-res ellipsoid ── */
-  const faceGeo = new THREE.SphereGeometry(1.18, 48, 36);
-  faceGeo.scale(0.78, 1.08, 0.68);
-
-  // Solid dark face
-  const solidMat = new THREE.MeshPhongMaterial({
-    color: 0x060818,
-    emissive: 0x0a0d2a,
-    transparent: true,
-    opacity: 0.92,
-    shininess: 80,
-    specular: 0x4f46e5,
-  });
-  const solidMesh = new THREE.Mesh(faceGeo.clone(), solidMat);
-  solidMesh.scale.set(0.97, 0.97, 0.97);
-  scene.add(solidMesh);
-
-  // Wireframe overlay
-  const wireMat = new THREE.MeshBasicMaterial({
-    color: 0x4f46e5,
-    wireframe: true,
-    transparent: true,
-    opacity: 0.0,
-  });
-  const wireMesh = new THREE.Mesh(faceGeo.clone(), wireMat);
-  scene.add(wireMesh);
-
-  /* ── Scan plane (sweeps top→bottom with gradient glow) ── */
-  // Main line
-  const scanLineMat = new THREE.MeshBasicMaterial({
-    color: 0x818cf8,
-    transparent: true,
-    opacity: 0,
-    side: THREE.DoubleSide,
-  });
-  const scanLine = new THREE.Mesh(new THREE.PlaneGeometry(2.8, 0.006), scanLineMat);
-  scanLine.position.set(0, 1.35, 0.72);
-  scene.add(scanLine);
-
-  // Wide soft glow below line
-  const scanGlowMat = new THREE.MeshBasicMaterial({
-    color: 0x6366f1,
-    transparent: true,
-    opacity: 0,
-    side: THREE.DoubleSide,
-  });
-  const scanGlow = new THREE.Mesh(new THREE.PlaneGeometry(2.8, 0.55), scanGlowMat);
-  scanGlow.position.copy(scanLine.position);
-  scene.add(scanGlow);
-
-  // Thin bright leading edge
-  const scanEdgeMat = new THREE.MeshBasicMaterial({
-    color: 0xe0e7ff,
-    transparent: true,
-    opacity: 0,
-    side: THREE.DoubleSide,
-  });
-  const scanEdge = new THREE.Mesh(new THREE.PlaneGeometry(2.8, 0.002), scanEdgeMat);
-  scanEdge.position.copy(scanLine.position);
-  scene.add(scanEdge);
-
-  /* ── Landmark dots — anatomically clustered ── */
-  const landmarkGroups = [
-    // Eyes (more dense)
-    ...Array.from({ length: 28 }, (_, i) => {
-      const side = i < 14 ? -1 : 1;
-      const a = (i % 14) / 14 * Math.PI * 2;
-      return { x: side * 0.38 + Math.cos(a) * 0.18, y: 0.22 + Math.sin(a) * 0.09, z: 0.88 };
-    }),
-    // Nose bridge
-    ...Array.from({ length: 8 }, (_, i) => ({
-      x: (Math.random() - 0.5) * 0.18,
-      y: lerp(0.18, -0.18, i / 7),
-      z: 0.9 + Math.random() * 0.08,
-    })),
-    // Mouth
-    ...Array.from({ length: 16 }, (_, i) => {
-      const a = (i / 16) * Math.PI * 2;
-      return { x: Math.cos(a) * 0.28, y: -0.38 + Math.sin(a) * 0.1, z: 0.86 };
-    }),
-    // Jawline
-    ...Array.from({ length: 20 }, (_, i) => {
-      const a = lerp(-0.7, Math.PI + 0.7, i / 19);
-      return { x: Math.cos(a) * 0.82, y: -0.55 + Math.sin(a) * 0.35, z: 0.55 };
-    }),
-    // Forehead
-    ...Array.from({ length: 12 }, (_, i) => ({
-      x: lerp(-0.55, 0.55, i / 11),
-      y: 0.72 + Math.random() * 0.2,
-      z: 0.72 + Math.random() * 0.1,
-    })),
-    // Cheeks
-    ...Array.from({ length: 10 }, (_, i) => {
-      const side = i < 5 ? -1 : 1;
-      return { x: side * (0.55 + Math.random() * 0.1), y: -0.05 + Math.random() * 0.2, z: 0.7 };
-    }),
-  ];
-
-  const lmPositions = new Float32Array(landmarkGroups.length * 3);
-  landmarkGroups.forEach((p, i) => {
-    lmPositions[i * 3]     = p.x;
-    lmPositions[i * 3 + 1] = p.y;
-    lmPositions[i * 3 + 2] = p.z;
-  });
-  const lmGeo = new THREE.BufferGeometry();
-  lmGeo.setAttribute('position', new THREE.BufferAttribute(lmPositions, 3));
-  const lmMat = new THREE.PointsMaterial({
-    color: 0xc7d2fe,
-    size: 0.028,
-    transparent: true,
-    opacity: 0,
-    sizeAttenuation: true,
-  });
-  const landmarks = new THREE.Points(lmGeo, lmMat);
-  scene.add(landmarks);
-
-  /* ── Landmark connection lines ── */
-  const connPts: THREE.Vector3[] = [];
-  // Eye outlines
-  for (let e = 0; e < 2; e++) {
-    const base = e * 14;
-    for (let i = 0; i < 14; i++) {
-      const a = landmarkGroups[base + i];
-      const b = landmarkGroups[base + (i + 1) % 14];
-      connPts.push(new THREE.Vector3(a.x, a.y, a.z));
-      connPts.push(new THREE.Vector3(b.x, b.y, b.z));
-    }
+/* ─── Face landmark positions (normalised -1..1) ─────────── */
+const FACE_LANDMARKS = (() => {
+  const pts: { x: number; y: number; group: number }[] = [];
+  // Left eye (0)
+  for (let i = 0; i < 16; i++) {
+    const a = (i / 16) * Math.PI * 2;
+    pts.push({ x: -0.30 + Math.cos(a) * 0.13, y: 0.20 + Math.sin(a) * 0.065, group: 0 });
   }
-  // Mouth outline
-  for (let i = 28 + 8; i < 28 + 8 + 16; i++) {
-    const a = landmarkGroups[i];
-    const b = landmarkGroups[28 + 8 + (i - 28 - 8 + 1) % 16];
-    connPts.push(new THREE.Vector3(a.x, a.y, a.z));
-    connPts.push(new THREE.Vector3(b.x, b.y, b.z));
+  // Right eye (1)
+  for (let i = 0; i < 16; i++) {
+    const a = (i / 16) * Math.PI * 2;
+    pts.push({ x: 0.30 + Math.cos(a) * 0.13, y: 0.20 + Math.sin(a) * 0.065, group: 1 });
   }
-  // Jawline
-  for (let i = 28 + 8 + 16; i < 28 + 8 + 16 + 19; i++) {
-    const a = landmarkGroups[i];
-    const b = landmarkGroups[i + 1];
-    connPts.push(new THREE.Vector3(a.x, a.y, a.z));
-    connPts.push(new THREE.Vector3(b.x, b.y, b.z));
+  // Left eyebrow (2)
+  for (let i = 0; i < 8; i++) {
+    pts.push({ x: lerp(-0.44, -0.16, i / 7), y: 0.36 + Math.sin((i / 7) * Math.PI) * 0.04, group: 2 });
   }
-  const connGeo = new THREE.BufferGeometry().setFromPoints(connPts);
-  const connMat = new THREE.LineBasicMaterial({ color: 0x6366f1, transparent: true, opacity: 0 });
-  const connLines = new THREE.LineSegments(connGeo, connMat);
-  scene.add(connLines);
-
-  /* ── Depth rings (concentric, tilted) ── */
-  const rings: { mesh: THREE.Mesh; mat: THREE.MeshBasicMaterial }[] = [];
-  const ringRadii = [1.42, 1.62, 1.85, 2.12];
-  const ringTilts = [0, 0.18, -0.12, 0.28];
-  ringRadii.forEach((r, i) => {
-    const mat = new THREE.MeshBasicMaterial({ color: i < 2 ? 0x6366f1 : 0xa78bfa, transparent: true, opacity: 0 });
-    const mesh = new THREE.Mesh(new THREE.TorusGeometry(r, 0.006 - i * 0.001, 6, 100), mat);
-    mesh.rotation.x = ringTilts[i];
-    mesh.rotation.y = i * 0.15;
-    scene.add(mesh);
-    rings.push({ mesh, mat });
-  });
-
-  /* ── Rotating arc (biometric scan indicator) ── */
-  const arcCurve = new THREE.EllipseCurve(0, 0, 1.52, 1.52, 0, Math.PI * 1.6, false, 0);
-  const arcPts = arcCurve.getPoints(80);
-  const arcGeo = new THREE.BufferGeometry().setFromPoints(arcPts.map(p => new THREE.Vector3(p.x, p.y, 0)));
-  const arcMat = new THREE.LineBasicMaterial({ color: 0x818cf8, transparent: true, opacity: 0 });
-  const arcLine = new THREE.Line(arcGeo, arcMat);
-  scene.add(arcLine);
-
-  /* ── Corner brackets (HUD) ── */
-  const bracketMat = new THREE.LineBasicMaterial({ color: 0x818cf8, transparent: true, opacity: 0 });
-  function makeBracket(x: number, y: number, sx: number, sy: number, z = 0.95) {
-    const L = 0.38;
-    const pts = [
-      new THREE.Vector3(x, y - sy * L, z),
-      new THREE.Vector3(x, y, z),
-      new THREE.Vector3(x + sx * L, y, z),
-    ];
-    return new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), bracketMat);
+  // Right eyebrow (3)
+  for (let i = 0; i < 8; i++) {
+    pts.push({ x: lerp(0.16, 0.44, i / 7), y: 0.36 + Math.sin((i / 7) * Math.PI) * 0.04, group: 3 });
   }
-  const brackets = [
-    makeBracket(-1.32,  1.45,  1, -1),
-    makeBracket( 1.32,  1.45, -1, -1),
-    makeBracket(-1.32, -1.45,  1,  1),
-    makeBracket( 1.32, -1.45, -1,  1),
-  ];
-  brackets.forEach(b => scene.add(b));
-
-  /* ── Tick marks on outer ring ── */
-  const tickMat = new THREE.LineBasicMaterial({ color: 0x6366f1, transparent: true, opacity: 0 });
-  const tickLines: THREE.Line[] = [];
-  for (let i = 0; i < 36; i++) {
-    const a = (i / 36) * Math.PI * 2;
-    const r0 = 1.88, r1 = i % 3 === 0 ? 1.98 : 1.93;
-    const pts = [
-      new THREE.Vector3(Math.cos(a) * r0, Math.sin(a) * r0, 0),
-      new THREE.Vector3(Math.cos(a) * r1, Math.sin(a) * r1, 0),
-    ];
-    const tl = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), tickMat);
-    scene.add(tl);
-    tickLines.push(tl);
+  // Nose bridge (4)
+  for (let i = 0; i < 6; i++) {
+    pts.push({ x: (Math.random() - 0.5) * 0.08, y: lerp(0.14, -0.08, i / 5), group: 4 });
   }
-
-  /* ── Data stream particles (fly upward to cloud) ── */
-  const PART = 180;
-  const partPos  = new Float32Array(PART * 3);
-  const partVel  = new Float32Array(PART * 3);
-  const partLife = new Float32Array(PART);
-  for (let i = 0; i < PART; i++) {
-    partPos[i * 3]     = (Math.random() - 0.5) * 2.2;
-    partPos[i * 3 + 1] = lerp(-1.6, 1.6, Math.random());
-    partPos[i * 3 + 2] = (Math.random() - 0.5) * 0.5;
-    partVel[i * 3]     = (Math.random() - 0.5) * 0.006;
-    partVel[i * 3 + 1] = 0.016 + Math.random() * 0.022;
-    partVel[i * 3 + 2] = 0;
-    partLife[i]        = Math.random();
+  // Nose tip (5)
+  for (let i = 0; i < 8; i++) {
+    const a = (i / 8) * Math.PI * 2;
+    pts.push({ x: Math.cos(a) * 0.08, y: -0.08 + Math.sin(a) * 0.045, group: 5 });
   }
-  const partGeo = new THREE.BufferGeometry();
-  partGeo.setAttribute('position', new THREE.BufferAttribute(partPos, 3));
-  const partMat = new THREE.PointsMaterial({ color: 0x818cf8, size: 0.022, transparent: true, opacity: 0, sizeAttenuation: true });
-  const partMesh = new THREE.Points(partGeo, partMat);
-  scene.add(partMesh);
+  // Mouth outer (6)
+  for (let i = 0; i < 20; i++) {
+    const a = (i / 20) * Math.PI * 2;
+    pts.push({ x: Math.cos(a) * 0.22, y: -0.30 + Math.sin(a) * 0.085, group: 6 });
+  }
+  // Mouth inner (7)
+  for (let i = 0; i < 12; i++) {
+    const a = (i / 12) * Math.PI * 2;
+    pts.push({ x: Math.cos(a) * 0.13, y: -0.30 + Math.sin(a) * 0.05, group: 7 });
+  }
+  // Jawline (8)
+  for (let i = 0; i < 24; i++) {
+    const a = lerp(-0.62, Math.PI + 0.62, i / 23);
+    pts.push({ x: Math.cos(a) * 0.62, y: -0.42 + Math.sin(a) * 0.30, group: 8 });
+  }
+  // Forehead (9)
+  for (let i = 0; i < 14; i++) {
+    pts.push({ x: lerp(-0.46, 0.46, i / 13), y: 0.56 + Math.random() * 0.16, group: 9 });
+  }
+  // Cheeks (10)
+  for (let i = 0; i < 10; i++) {
+    const s = i < 5 ? -1 : 1;
+    pts.push({ x: s * (0.42 + Math.random() * 0.08), y: -0.02 + Math.random() * 0.18, group: 10 });
+  }
+  return pts;
+})();
 
-  /* ── Dashboard bars (appear at end) ── */
-  const barGroup = new THREE.Group();
-  barGroup.position.set(0, -1.9, 0.2);
-  const barData = [0.55, 0.82, 0.38, 0.91, 0.67, 0.74, 0.48, 0.88];
-  const barMeshes: { mesh: THREE.Mesh; mat: THREE.MeshPhongMaterial; targetH: number }[] = [];
-  barData.forEach((h, i) => {
-    const mat = new THREE.MeshPhongMaterial({
-      color: i % 2 === 0 ? 0x6366f1 : 0xa78bfa,
-      emissive: i % 2 === 0 ? 0x312e81 : 0x4c1d95,
-      transparent: true,
-      opacity: 0,
-      shininess: 60,
-    });
-    const geo = new THREE.BoxGeometry(0.12, 0.001, 0.08);
-    const mesh = new THREE.Mesh(geo, mat);
-    mesh.position.set(lerp(-0.7, 0.7, i / 7), 0, 0);
-    barGroup.add(mesh);
-    barMeshes.push({ mesh, mat, targetH: h * 0.6 });
-  });
-  scene.add(barGroup);
-
-  return {
-    renderer, scene, camera,
-    solidMesh, solidMat,
-    wireMesh, wireMat,
-    scanLine, scanLineMat,
-    scanGlow, scanGlowMat,
-    scanEdge, scanEdgeMat,
-    landmarks, lmMat,
-    connLines, connMat,
-    rings,
-    arcLine, arcMat,
-    brackets, bracketMat,
-    tickLines, tickMat,
-    partMesh, partMat, partPos, partVel, partLife,
-    barMeshes, barGroup,
-    keyLight, fillLight, rimLight, verifyLight,
+/* ─── Connection pairs ─────────────────────────────────────── */
+const CONNECTIONS: [number, number][] = (() => {
+  const pairs: [number, number][] = [];
+  const addLoop = (start: number, count: number) => {
+    for (let i = 0; i < count; i++) pairs.push([start + i, start + (i + 1) % count]);
   };
-}
+  const addLine = (start: number, count: number) => {
+    for (let i = 0; i < count - 1; i++) pairs.push([start + i, start + i + 1]);
+  };
+  addLoop(0, 16);   // left eye
+  addLoop(16, 16);  // right eye
+  addLine(32, 8);   // left brow
+  addLine(40, 8);   // right brow
+  addLine(48, 6);   // nose bridge
+  addLoop(54, 8);   // nose tip
+  addLoop(62, 20);  // mouth outer
+  addLoop(82, 12);  // mouth inner
+  addLine(94, 24);  // jawline
+  addLine(118, 14); // forehead
+  return pairs;
+})();
 
-/* ─── Loader Component ─────────────────────────────────────── */
-export function Loader({ onDone }: { onDone: () => void }) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [phaseIdx, setPhaseIdx]   = useState(0);
-  const [progress, setProgress]   = useState(0);
-  const [verified, setVerified]   = useState(false);
-  const [exiting,  setExiting]    = useState(false);
-  const doneRef = useRef(false);
-
+/* ─── Canvas renderer ──────────────────────────────────────── */
+function useCanvasRenderer(
+  canvasRef: React.RefObject<HTMLCanvasElement>,
+  progressRef: React.RefObject<number>,
+  verifiedRef: React.RefObject<boolean>,
+) {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
-    const ctx = buildScene(canvas);
-    const {
-      renderer, scene, camera,
-      solidMat, wireMat,
-      scanLine, scanLineMat,
-      scanGlow, scanGlowMat,
-      scanEdge, scanEdgeMat,
-      lmMat, connMat,
-      rings, arcLine, arcMat,
-      bracketMat, tickMat,
-      partMesh, partMat, partPos, partVel, partLife,
-      barMeshes, barGroup,
-      keyLight, verifyLight,
-    } = ctx;
-
-    const onResize = () => {
-      const w = canvas.clientWidth;
-      const h = canvas.clientHeight;
-      renderer.setSize(w, h, false);
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-    };
-    window.addEventListener('resize', onResize);
-    onResize();
-
+    const ctx = canvas.getContext('2d')!;
     let raf = 0;
-    const startTime = performance.now();
-    let elapsed = 0;
+    const t0 = performance.now();
 
-    const animate = () => {
-      raf = requestAnimationFrame(animate);
-      elapsed = performance.now() - startTime;
-      const t = clamp01(elapsed / TOTAL_MS);
-      setProgress(t * 100);
+    // Particle system
+    const PARTS = 180;
+    const px = new Float32Array(PARTS), py = new Float32Array(PARTS);
+    const pvx = new Float32Array(PARTS), pvy = new Float32Array(PARTS);
+    const palpha = new Float32Array(PARTS);
+    for (let i = 0; i < PARTS; i++) {
+      px[i] = Math.random();
+      py[i] = Math.random();
+      pvx[i] = (Math.random() - 0.5) * 0.0004;
+      pvy[i] = -(0.0006 + Math.random() * 0.0008);
+      palpha[i] = Math.random();
+    }
 
-      // Phase
-      let pi = PHASES.length - 1;
-      for (let i = 0; i < PHASES.length - 1; i++) {
-        if (t < PHASES[i + 1].pct) { pi = i; break; }
+    const resize = () => {
+      canvas.width = canvas.clientWidth * window.devicePixelRatio;
+      canvas.height = canvas.clientHeight * window.devicePixelRatio;
+    };
+    window.addEventListener('resize', resize);
+    resize();
+
+    const draw = () => {
+      raf = requestAnimationFrame(draw);
+      const elapsed = performance.now() - t0;
+      const t = c01(elapsed / TOTAL);
+      const W = canvas.width, H = canvas.height;
+      const cx = W / 2, cy = H / 2;
+      const scale = Math.min(W, H) * 0.38;
+      const prog = progressRef.current ?? 0;
+      const verified = verifiedRef.current ?? false;
+
+      ctx.clearRect(0, 0, W, H);
+
+      /* ── Background radial glow ── */
+      const bgGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, scale * 1.8);
+      bgGrad.addColorStop(0, `rgba(79,70,229,${0.06 + Math.sin(elapsed / 1200) * 0.02})`);
+      bgGrad.addColorStop(0.5, 'rgba(124,58,237,0.02)');
+      bgGrad.addColorStop(1, 'transparent');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, W, H);
+
+      /* ── Floating particles ── */
+      const partT = iL(0.62, 0.92, t);
+      if (partT > 0) {
+        for (let i = 0; i < PARTS; i++) {
+          px[i] += pvx[i]; py[i] += pvy[i]; palpha[i] -= 0.003;
+          if (py[i] < -0.05 || palpha[i] <= 0) {
+            px[i] = 0.3 + Math.random() * 0.4; py[i] = 0.6 + Math.random() * 0.3;
+            pvx[i] = (Math.random() - 0.5) * 0.0004; pvy[i] = -(0.0006 + Math.random() * 0.0008);
+            palpha[i] = 0.4 + Math.random() * 0.5;
+          }
+          const a = palpha[i] * partT * 0.7;
+          if (a <= 0) continue;
+          const col = i % 3 === 0 ? `rgba(129,140,248,${a})` : i % 3 === 1 ? `rgba(167,139,250,${a})` : `rgba(56,189,248,${a})`;
+          ctx.beginPath();
+          ctx.arc(px[i] * W, py[i] * H, (i % 4 === 0 ? 1.5 : 0.8) * window.devicePixelRatio, 0, Math.PI * 2);
+          ctx.fillStyle = col;
+          ctx.fill();
+        }
+      }
+
+      /* ── Outer tick ring ── */
+      const ringAlpha = easeO(iL(0, 0.10, t));
+      if (ringAlpha > 0) {
+        for (let i = 0; i < 60; i++) {
+          const a = (i / 60) * Math.PI * 2 + elapsed * 0.00008;
+          const isMaj = i % 5 === 0, isMed = i % 2 === 0;
+          const r0 = scale * 1.52, r1 = r0 + (isMaj ? 14 : isMed ? 8 : 5) * window.devicePixelRatio;
+          ctx.beginPath();
+          ctx.moveTo(cx + Math.cos(a) * r0, cy + Math.sin(a) * r0);
+          ctx.lineTo(cx + Math.cos(a) * r1, cy + Math.sin(a) * r1);
+          ctx.strokeStyle = `rgba(${isMaj ? '129,140,248' : '79,70,229'},${ringAlpha * (isMaj ? 0.7 : 0.3)})`;
+          ctx.lineWidth = (isMaj ? 1.5 : 0.8) * window.devicePixelRatio;
+          ctx.stroke();
+        }
+        // Outer circle
+        ctx.beginPath();
+        ctx.arc(cx, cy, scale * 1.52, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(79,70,229,${ringAlpha * 0.18})`;
+        ctx.lineWidth = 0.8 * window.devicePixelRatio;
+        ctx.stroke();
+      }
+
+      /* ── Rotating arcs ── */
+      const arcAlpha = easeO(iL(0.06, 0.20, t)) * (1 - iL(0.88, 0.98, t));
+      if (arcAlpha > 0) {
+        // Arc 1
+        ctx.beginPath();
+        ctx.arc(cx, cy, scale * 1.30, elapsed * 0.00055, elapsed * 0.00055 + Math.PI * 1.65);
+        ctx.strokeStyle = `rgba(129,140,248,${arcAlpha * 0.55})`;
+        ctx.lineWidth = 1.5 * window.devicePixelRatio;
+        ctx.stroke();
+        // Arc 2 (counter)
+        ctx.beginPath();
+        ctx.arc(cx, cy, scale * 1.42, -elapsed * 0.00038, -elapsed * 0.00038 + Math.PI * 0.85);
+        ctx.strokeStyle = `rgba(167,139,250,${arcAlpha * 0.35})`;
+        ctx.lineWidth = 1 * window.devicePixelRatio;
+        ctx.stroke();
+        // Arc 3 (inner fast)
+        ctx.beginPath();
+        ctx.arc(cx, cy, scale * 1.18, elapsed * 0.0009, elapsed * 0.0009 + Math.PI * 0.55);
+        ctx.strokeStyle = `rgba(56,189,248,${arcAlpha * 0.25})`;
+        ctx.lineWidth = 0.8 * window.devicePixelRatio;
+        ctx.stroke();
+      }
+
+      /* ── Concentric rings ── */
+      [1.28, 1.10, 0.92].forEach((r, i) => {
+        const a = easeO(iL(0.02 + i * 0.03, 0.14 + i * 0.03, t)) * (1 - iL(0.88, 0.98, t));
+        if (a <= 0) return;
+        ctx.beginPath();
+        ctx.arc(cx, cy, scale * r, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(${['79,70,229', '99,102,241', '124,58,237'][i]},${a * (0.22 - i * 0.04)})`;
+        ctx.lineWidth = (1.2 - i * 0.2) * window.devicePixelRatio;
+        ctx.stroke();
+      });
+
+      /* ── Corner brackets ── */
+      const bAlpha = easeO(iL(0, 0.10, t));
+      if (bAlpha > 0) {
+        const bx = scale * 1.08, by = scale * 1.22, bL = scale * 0.28;
+        const corners = [[-1, -1], [1, -1], [-1, 1], [1, 1]] as const;
+        corners.forEach(([sx, sy]) => {
+          const ox = cx + sx * bx, oy = cy + sy * by;
+          ctx.beginPath();
+          ctx.moveTo(ox, oy + sy * bL);
+          ctx.lineTo(ox, oy);
+          ctx.lineTo(ox - sx * bL, oy);
+          ctx.strokeStyle = `rgba(129,140,248,${bAlpha * 0.75})`;
+          ctx.lineWidth = 1.5 * window.devicePixelRatio;
+          ctx.lineJoin = 'miter';
+          ctx.stroke();
+        });
+        // Corner dots
+        corners.forEach(([sx, sy]) => {
+          ctx.beginPath();
+          ctx.arc(cx + sx * bx, cy + sy * by, 2.5 * window.devicePixelRatio, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(129,140,248,${bAlpha * 0.9})`;
+          ctx.fill();
+        });
+      }
+
+      /* ── Face oval ── */
+      const faceAlpha = easeO(iL(0.04, 0.18, t));
+      if (faceAlpha > 0) {
+        // Solid fill
+        const fGrad = ctx.createRadialGradient(cx, cy - scale * 0.05, 0, cx, cy, scale * 0.95);
+        fGrad.addColorStop(0, `rgba(8,10,28,${faceAlpha * 0.92})`);
+        fGrad.addColorStop(0.7, `rgba(4,6,18,${faceAlpha * 0.96})`);
+        fGrad.addColorStop(1, `rgba(2,3,12,${faceAlpha * 0.98})`);
+        ctx.save();
+        ctx.scale(0.76, 1.0);
+        ctx.beginPath();
+        ctx.arc(cx / 0.76, cy, scale * 0.95, 0, Math.PI * 2);
+        ctx.fillStyle = fGrad;
+        ctx.fill();
+        ctx.restore();
+
+        // Wireframe ellipse
+        ctx.save();
+        ctx.scale(0.76, 1.0);
+        ctx.beginPath();
+        ctx.arc(cx / 0.76, cy, scale * 0.95, 0, Math.PI * 2);
+        const wireCol = verified ? `rgba(52,211,153,${faceAlpha * 0.30})` : `rgba(79,70,229,${faceAlpha * 0.22})`;
+        ctx.strokeStyle = wireCol;
+        ctx.lineWidth = 1 * window.devicePixelRatio;
+        ctx.stroke();
+        ctx.restore();
+
+        // Specular highlight
+        const specGrad = ctx.createRadialGradient(cx - scale * 0.18, cy - scale * 0.28, 0, cx - scale * 0.18, cy - scale * 0.28, scale * 0.55);
+        specGrad.addColorStop(0, `rgba(129,140,248,${faceAlpha * 0.08})`);
+        specGrad.addColorStop(1, 'transparent');
+        ctx.save();
+        ctx.scale(0.76, 1.0);
+        ctx.beginPath();
+        ctx.arc(cx / 0.76, cy, scale * 0.95, 0, Math.PI * 2);
+        ctx.clip();
+        ctx.fillStyle = specGrad;
+        ctx.fillRect(0, 0, W / 0.76, H);
+        ctx.restore();
+      }
+
+      /* ── Scan beam ── */
+      const scanT = iL(0.12, 0.56, t);
+      if (scanT > 0 && scanT < 1) {
+        const sy = cy + lerp(-scale * 1.05, scale * 1.05, scanT);
+        const scanFade = iL(0.54, 0.62, t);
+
+        // Glow below
+        const glowH = scale * 0.55;
+        const glowGrad = ctx.createLinearGradient(0, sy, 0, sy + glowH);
+        glowGrad.addColorStop(0, `rgba(99,102,241,${(1 - scanFade) * 0.10})`);
+        glowGrad.addColorStop(1, 'transparent');
+        ctx.fillStyle = glowGrad;
+        ctx.fillRect(cx - scale * 1.1, sy, scale * 2.2, glowH);
+
+        // Main line
+        const lineGrad = ctx.createLinearGradient(cx - scale * 1.1, 0, cx + scale * 1.1, 0);
+        lineGrad.addColorStop(0, 'transparent');
+        lineGrad.addColorStop(0.15, `rgba(129,140,248,${(1 - scanFade) * 0.9})`);
+        lineGrad.addColorStop(0.5, `rgba(224,231,255,${(1 - scanFade) * 1.0})`);
+        lineGrad.addColorStop(0.85, `rgba(129,140,248,${(1 - scanFade) * 0.9})`);
+        lineGrad.addColorStop(1, 'transparent');
+        ctx.fillStyle = lineGrad;
+        ctx.fillRect(cx - scale * 1.1, sy - 1 * window.devicePixelRatio, scale * 2.2, 2 * window.devicePixelRatio);
+
+        // Bright leading edge
+        ctx.fillStyle = `rgba(240,244,255,${(1 - scanFade) * 0.6})`;
+        ctx.fillRect(cx - scale * 1.1, sy - 0.5 * window.devicePixelRatio, scale * 2.2, 0.5 * window.devicePixelRatio);
+
+        // Scan light on face
+        const scanLightGrad = ctx.createRadialGradient(cx, sy, 0, cx, sy, scale * 0.8);
+        scanLightGrad.addColorStop(0, `rgba(129,140,248,${(1 - scanFade) * 0.12})`);
+        scanLightGrad.addColorStop(1, 'transparent');
+        ctx.fillStyle = scanLightGrad;
+        ctx.fillRect(cx - scale * 1.1, sy - scale * 0.8, scale * 2.2, scale * 1.6);
+      }
+
+      /* ── Landmarks ── */
+      const lmT = easeO(iL(0.12, 0.56, t));
+      if (lmT > 0) {
+        const scanY = lerp(-scale * 1.05, scale * 1.05, iL(0.12, 0.56, t));
+        const verGreen = verified;
+
+        FACE_LANDMARKS.forEach((p, idx) => {
+          const px2 = cx + p.x * scale * 0.88;
+          const py2 = cy - p.y * scale * 0.88;
+          const relY = py2 - cy;
+          const revealT = c01((scanY - relY + scale * 0.15) / (scale * 0.3));
+          const alpha = lmT * revealT;
+          if (alpha <= 0) return;
+
+          const dotCol = verGreen
+            ? `rgba(110,231,183,${alpha * 0.95})`
+            : `rgba(199,210,254,${alpha * 0.90})`;
+          ctx.beginPath();
+          ctx.arc(px2, py2, 1.8 * window.devicePixelRatio, 0, Math.PI * 2);
+          ctx.fillStyle = dotCol;
+          ctx.fill();
+
+          // Glow on key points
+          if (idx % 8 === 0) {
+            ctx.beginPath();
+            ctx.arc(px2, py2, 5 * window.devicePixelRatio, 0, Math.PI * 2);
+            ctx.fillStyle = verGreen ? `rgba(52,211,153,${alpha * 0.15})` : `rgba(99,102,241,${alpha * 0.15})`;
+            ctx.fill();
+          }
+        });
+
+        /* Connection lines */
+        const connAlpha = easeO(iL(0.28, 0.56, t)) * lmT;
+        if (connAlpha > 0) {
+          ctx.lineWidth = 0.6 * window.devicePixelRatio;
+          CONNECTIONS.forEach(([a, b]) => {
+            const pa = FACE_LANDMARKS[a], pb = FACE_LANDMARKS[b];
+            if (!pa || !pb) return;
+            const ax = cx + pa.x * scale * 0.88, ay = cy - pa.y * scale * 0.88;
+            const bx2 = cx + pb.x * scale * 0.88, by2 = cy - pb.y * scale * 0.88;
+            ctx.beginPath();
+            ctx.moveTo(ax, ay);
+            ctx.lineTo(bx2, by2);
+            ctx.strokeStyle = verGreen
+              ? `rgba(52,211,153,${connAlpha * 0.45})`
+              : `rgba(99,102,241,${connAlpha * 0.40})`;
+            ctx.stroke();
+          });
+        }
+      }
+
+      /* ── Verify flash ── */
+      const verT = iL(0.56, 0.66, t);
+      if (verT > 0) {
+        const pulse = Math.sin(verT * Math.PI);
+        const flashGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, scale * 1.2);
+        flashGrad.addColorStop(0, `rgba(52,211,153,${pulse * 0.18})`);
+        flashGrad.addColorStop(0.5, `rgba(52,211,153,${pulse * 0.06})`);
+        flashGrad.addColorStop(1, 'transparent');
+        ctx.fillStyle = flashGrad;
+        ctx.fillRect(0, 0, W, H);
+
+        // Verified ring pulse
+        ctx.beginPath();
+        ctx.arc(cx, cy, scale * (0.98 + pulse * 0.08), 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(52,211,153,${pulse * 0.6})`;
+        ctx.lineWidth = (1.5 + pulse * 2) * window.devicePixelRatio;
+        ctx.stroke();
+      }
+
+      /* ── Dashboard bars ── */
+      const dashT = easeO(iL(0.86, 1.0, t));
+      if (dashT > 0) {
+        const barData = [0.52, 0.78, 0.35, 0.94, 0.61, 0.83, 0.44, 0.90, 0.68, 0.76];
+        const bW = scale * 0.10, gap = scale * 0.055;
+        const totalW = barData.length * (bW + gap) - gap;
+        const startX = cx - totalW / 2;
+        const baseY = cy + scale * 1.05;
+        const maxH = scale * 0.55;
+
+        barData.forEach((h, i) => {
+          const bt = easeO(c01((dashT - i * 0.06) * 2.5));
+          const barH = h * maxH * bt;
+          const x = startX + i * (bW + gap);
+          const colors = ['rgba(99,102,241', 'rgba(124,58,237', 'rgba(129,140,248', 'rgba(167,139,250', 'rgba(79,70,229'];
+          const col = colors[i % colors.length];
+
+          // Bar glow
+          const barGrad = ctx.createLinearGradient(0, baseY - barH, 0, baseY);
+          barGrad.addColorStop(0, `${col},${bt * 0.9})`);
+          barGrad.addColorStop(1, `${col},${bt * 0.3})`);
+          ctx.fillStyle = barGrad;
+          ctx.fillRect(x, baseY - barH, bW, barH);
+
+          // Top cap glow
+          if (barH > 2) {
+            ctx.fillStyle = `${col},${bt * 0.6})`;
+            ctx.fillRect(x, baseY - barH - 1.5 * window.devicePixelRatio, bW, 1.5 * window.devicePixelRatio);
+          }
+        });
+
+        // Base line
+        ctx.fillStyle = `rgba(79,70,229,${dashT * 0.3})`;
+        ctx.fillRect(startX - 4, baseY, totalW + 8, 1 * window.devicePixelRatio);
+
+        // Fade face
+        const fadeGrad = ctx.createRadialGradient(cx, cy, scale * 0.3, cx, cy, scale * 0.95);
+        fadeGrad.addColorStop(0, `rgba(1,3,11,${dashT * 0.7})`);
+        fadeGrad.addColorStop(1, 'transparent');
+        ctx.fillStyle = fadeGrad;
+        ctx.fillRect(0, 0, W, H);
+      }
+    };
+
+    draw();
+    return () => { cancelAnimationFrame(raf); window.removeEventListener('resize', resize); };
+  }, [canvasRef, progressRef, verifiedRef]);
+}
+
+/* ─── Component ────────────────────────────────────────────── */
+export function Loader({ onDone }: { onDone: () => void }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const progressRef = useRef(0);
+  const verifiedRef = useRef(false);
+
+  const [phaseIdx, setPhaseIdx] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const [verified, setVerified] = useState(false);
+  const [exiting, setExiting] = useState(false);
+  const doneRef = useRef(false);
+
+  // Keep refs in sync for canvas renderer
+  progressRef.current = progress;
+  verifiedRef.current = verified;
+
+  useCanvasRenderer(canvasRef, progressRef, verifiedRef);
+
+  useEffect(() => {
+    const t0 = performance.now();
+    let raf = 0;
+
+    const tick = () => {
+      raf = requestAnimationFrame(tick);
+      const t = c01((performance.now() - t0) / TOTAL);
+      const pct = t * 100;
+      setProgress(pct);
+
+      let pi = SEQ.length - 1;
+      for (let i = 0; i < SEQ.length - 1; i++) {
+        if (t < SEQ[i + 1].t) { pi = i; break; }
       }
       setPhaseIdx(pi);
       if (pi >= 4) setVerified(true);
 
-      /* ── 1. INTRO: brackets + rings fade in (t 0→0.12) ── */
-      const introT = invlerp(0, 0.12, t);
-      bracketMat.opacity = lerp(0, 0.75, introT);
-      tickMat.opacity    = lerp(0, 0.45, introT);
-      rings.forEach(({ mat }, i) => {
-        mat.opacity = lerp(0, 0.18 - i * 0.03, introT);
-      });
-
-      /* ── 2. WIREFRAME fade in (t 0.05→0.22) ── */
-      wireMat.opacity = lerp(0, 0.22, invlerp(0.05, 0.22, t));
-
-      /* ── 3. SCAN LINE sweeps (t 0.10→0.52) ── */
-      const scanT = invlerp(0.10, 0.52, t);
-      if (scanT > 0 && scanT < 1) {
-        const y = lerp(1.35, -1.35, scanT);
-        scanLine.position.y = y;
-        scanGlow.position.y = y - 0.18;
-        scanEdge.position.y = y + 0.003;
-        scanLineMat.opacity  = 0.95;
-        scanGlowMat.opacity  = lerp(0, 0.09, Math.min(scanT * 4, 1));
-        scanEdgeMat.opacity  = 0.6;
-        // Landmarks appear as scan passes them
-        lmMat.opacity  = lerp(0, 0.95, scanT);
-        connMat.opacity = lerp(0, 0.55, Math.max(0, scanT - 0.3) / 0.7);
-      } else if (scanT >= 1) {
-        scanLineMat.opacity = lerp(0.95, 0, invlerp(0.52, 0.60, t));
-        scanGlowMat.opacity = lerp(0.09, 0, invlerp(0.52, 0.60, t));
-        scanEdgeMat.opacity = lerp(0.6,  0, invlerp(0.52, 0.60, t));
-      }
-
-      /* ── 4. VERIFY flash (t 0.60→0.68) ── */
-      const verT = invlerp(0.60, 0.68, t);
-      if (verT > 0) {
-        const pulse = Math.sin(verT * Math.PI);
-        verifyLight.intensity = pulse * 5;
-        wireMat.color.setHex(verT > 0.5 ? 0x34d399 : 0x4f46e5);
-        wireMat.opacity = lerp(0.22, 0.38, pulse);
-        lmMat.color.setHex(verT > 0.5 ? 0x6ee7b7 : 0xc7d2fe);
-        connMat.color.setHex(verT > 0.5 ? 0x34d399 : 0x6366f1);
-        rings[0].mat.color.setHex(verT > 0.5 ? 0x34d399 : 0x6366f1);
-        rings[0].mat.opacity = lerp(0.18, 0.45, pulse);
-        keyLight.color.setHex(verT > 0.5 ? 0x34d399 : 0x818cf8);
-      }
-
-      /* ── 5. PARTICLES stream up (t 0.65→0.88) ── */
-      const partT = invlerp(0.65, 0.88, t);
-      if (partT > 0) {
-        partMat.opacity = lerp(0, 0.8, Math.min(partT * 4, 1));
-        const pos = partMesh.geometry.attributes.position as THREE.BufferAttribute;
-        for (let i = 0; i < 180; i++) {
-          partPos[i * 3]     += partVel[i * 3];
-          partPos[i * 3 + 1] += partVel[i * 3 + 1];
-          partLife[i] += 0.008;
-          if (partPos[i * 3 + 1] > 2.8 || partLife[i] > 1) {
-            partPos[i * 3]     = (Math.random() - 0.5) * 2.0;
-            partPos[i * 3 + 1] = -1.6;
-            partPos[i * 3 + 2] = (Math.random() - 0.5) * 0.4;
-            partLife[i] = 0;
-          }
-        }
-        pos.set(partPos);
-        pos.needsUpdate = true;
-      }
-      if (t > 0.88) partMat.opacity = lerp(0.8, 0, invlerp(0.88, 0.96, t));
-
-      /* ── 6. DASHBOARD bars grow (t 0.84→1.0) ── */
-      const dashT = invlerp(0.84, 1.0, t);
-      if (dashT > 0) {
-        barMeshes.forEach(({ mesh, mat, targetH }, i) => {
-          const bt = clamp01((dashT - i * 0.06) * 2.5);
-          const h = lerp(0.001, targetH, bt);
-          mesh.scale.y = h / 0.001;
-          mesh.position.y = h / 2;
-          mat.opacity = lerp(0, 0.85, bt);
-        });
-        // Fade face out
-        solidMat.opacity = lerp(0.92, 0.15, dashT);
-        wireMat.opacity  = lerp(wireMat.opacity, 0, dashT * 0.05);
-        lmMat.opacity    = lerp(lmMat.opacity, 0, dashT * 0.06);
-        connMat.opacity  = lerp(connMat.opacity, 0, dashT * 0.07);
-      }
-
-      /* ── Continuous: arc rotation ── */
-      arcLine.rotation.z += 0.022;
-      arcMat.opacity = lerp(0, 0.55, invlerp(0.08, 0.25, t)) * (1 - invlerp(0.82, 0.96, t));
-
-      /* ── Continuous: ring rotation ── */
-      rings.forEach(({ mesh }, i) => {
-        mesh.rotation.z += (i % 2 === 0 ? 0.003 : -0.002) * (1 + i * 0.3);
-        mesh.rotation.y += 0.001 * (i + 1);
-      });
-
-      /* ── Continuous: subtle face sway ── */
-      const sway = elapsed / 1000;
-      ctx.wireMesh.rotation.y = Math.sin(sway * 0.3) * 0.12;
-      ctx.solidMesh.rotation.y = ctx.wireMesh.rotation.y;
-      ctx.wireMesh.rotation.x = Math.sin(sway * 0.2) * 0.04;
-      ctx.solidMesh.rotation.x = ctx.wireMesh.rotation.x;
-
-      /* ── Dashboard group subtle float ── */
-      barGroup.position.y = -1.9 + Math.sin(sway * 0.5) * 0.015;
-
-      renderer.render(scene, camera);
-
       if (t >= 1 && !doneRef.current) {
         doneRef.current = true;
-        setTimeout(() => { setExiting(true); setTimeout(onDone, 800); }, 400);
+        cancelAnimationFrame(raf);
+        setTimeout(() => { setExiting(true); setTimeout(onDone, 900); }, 400);
       }
     };
-
-    animate();
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener('resize', onResize);
-      renderer.dispose();
-    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
   }, [onDone]);
 
-  const phase = PHASES[phaseIdx];
+  const phase = SEQ[phaseIdx];
+  const conf = verified ? '99.8' : `${Math.min(99, Math.round(progress * 1.42))}`;
+  const nodes = Math.round(lerp(0, 468, c01(progress / 48)));
+  const lat = Math.max(8, Math.round(lerp(140, 8, c01(progress / 58))));
 
   return (
     <AnimatePresence>
@@ -501,186 +508,359 @@ export function Loader({ onDone }: { onDone: () => void }) {
           key="loader"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, scale: 1.04 }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="fixed inset-0 z-[9999] bg-[#02040e] flex flex-col items-center justify-center overflow-hidden select-none"
+          transition={{ duration: 1.0, ease: [0.22, 1, 0.36, 1] }}
+          className="fixed inset-0 z-[9999] overflow-hidden select-none"
+          style={{ background: 'radial-gradient(ellipse 120% 100% at 50% 0%, #06082a 0%, #01030b 55%, #000208 100%)' }}
         >
-          {/* ── Deep background ── */}
-          <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-indigo-900/20 rounded-full blur-[160px]" />
-            <div className="absolute top-1/3 right-1/3 w-[300px] h-[300px] bg-violet-900/15 rounded-full blur-[120px]" />
-            <div className="absolute bottom-1/4 left-1/4 w-[250px] h-[250px] bg-blue-900/10 rounded-full blur-[100px]" />
-            {/* Fine grid */}
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(99,102,241,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(99,102,241,0.025)_1px,transparent_1px)] bg-[size:52px_52px]" />
-            {/* Vignette */}
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_70%_at_50%_50%,transparent_40%,rgba(2,4,14,0.85)_100%)]" />
-          </div>
 
-          {/* ── Brand ── */}
+          {/* ── Dot grid ── */}
+          <div className="absolute inset-0 pointer-events-none"
+            style={{ backgroundImage: 'radial-gradient(rgba(99,102,241,0.15) 1px, transparent 1px)', backgroundSize: '36px 36px' }} />
+
+          {/* ── Vignette ── */}
+          <div className="absolute inset-0 pointer-events-none"
+            style={{ background: 'radial-gradient(ellipse 80% 80% at 50% 50%, transparent 30%, rgba(0,2,8,0.88) 100%)' }} />
+
+          {/* ── Horizontal scan lines (subtle CRT) ── */}
+          <div className="absolute inset-0 pointer-events-none opacity-[0.025]"
+            style={{ backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.5) 2px, rgba(255,255,255,0.5) 3px)', backgroundSize: '100% 3px' }} />
+
+          {/* ══════════════════════════════════════════
+              TOP BAR
+          ══════════════════════════════════════════ */}
           <motion.div
-            initial={{ opacity: 0, y: -16 }}
+            initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute top-6 left-1/2 -translate-x-1/2 flex items-center gap-2.5 z-20"
+            transition={{ delay: 0.08, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            className="absolute top-0 left-0 right-0 h-12 flex items-center justify-between px-5 sm:px-8 border-b border-white/[0.05] z-30"
+            style={{ background: 'rgba(1,3,11,0.6)', backdropFilter: 'blur(12px)' }}
           >
-            <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-xl flex items-center justify-center shadow-[0_0_24px_rgba(99,102,241,0.55)]">
-              <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            {/* Brand */}
+            <div className="flex items-center gap-2.5">
+              <div className="w-6 h-6 rounded-lg flex items-center justify-center"
+                style={{ background: 'linear-gradient(135deg,#6366f1,#7c3aed)', boxShadow: '0 0 14px rgba(99,102,241,0.55)' }}>
+                <svg viewBox="0 0 24 24" className="w-3 h-3 fill-white"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg>
+              </div>
+              <span className="text-[11px] font-bold text-white tracking-tight">
+                Bytesflare <span style={{ background: 'linear-gradient(90deg,#818cf8,#a78bfa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Infotech</span>
+              </span>
+              <div className="hidden sm:block w-px h-3.5 bg-white/10 mx-1" />
+              <span className="hidden sm:block text-[9px] text-slate-600 font-mono tracking-widest">BytesAttend · v2.4.1</span>
             </div>
-            <span className="font-bold text-white tracking-tight text-sm">
-              Bytesflare{' '}
-              <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Infotech</span>
-            </span>
+
+            {/* Right: live status */}
+            <div className="flex items-center gap-4 font-mono">
+              <div className="hidden sm:flex items-center gap-3 text-[8px] text-slate-600 tracking-widest">
+                <span>TLS 1.3</span>
+                <span className="w-px h-3 bg-white/10" />
+                <span>AES-256-GCM</span>
+                <span className="w-px h-3 bg-white/10" />
+                <span>IN-WEST-1</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <motion.div
+                  animate={{ opacity: verified ? 1 : [1, 0.3, 1] }}
+                  transition={{ duration: 1.2, repeat: verified ? 0 : Infinity }}
+                  className={`w-1.5 h-1.5 rounded-full ${verified ? 'bg-emerald-400' : 'bg-indigo-400'}`}
+                  style={verified ? { boxShadow: '0 0 6px rgba(52,211,153,0.8)' } : {}}
+                />
+                <span className={`text-[9px] tracking-[0.15em] uppercase ${verified ? 'text-emerald-400' : 'text-indigo-400/80'}`}>
+                  {verified ? 'Verified' : 'Scanning'}
+                </span>
+              </div>
+            </div>
           </motion.div>
 
-          {/* ── Three.js canvas ── */}
-          <div className="relative w-full max-w-[560px] flex-shrink-0">
-            <canvas
-              ref={canvasRef}
-              className="w-full h-[320px] sm:h-[400px] block"
-            />
+          {/* ══════════════════════════════════════════
+              MAIN AREA
+          ══════════════════════════════════════════ */}
+          <div className="absolute inset-0 flex items-center justify-center pt-12 pb-28">
+            <div className="flex items-center gap-4 lg:gap-8 w-full max-w-5xl px-4">
 
-            {/* ── HUD overlay ── */}
-            <div className="absolute inset-0 pointer-events-none font-mono">
-              {/* Top-left */}
+              {/* ── Left panel ── */}
               <motion.div
-                initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.5, duration: 0.5 }}
-                className="absolute top-3 left-4 space-y-1"
+                initial={{ opacity: 0, x: -28 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.4, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+                className="hidden md:flex flex-col gap-0 w-44 flex-shrink-0"
+                style={{ fontFamily: "'Space Mono', 'Courier New', monospace" }}
               >
-                <div className="text-[9px] text-indigo-400/50 tracking-[0.2em] uppercase">BytesAttend · v2.4</div>
-                <div className="text-[9px] text-slate-600 tracking-widest">BIOMETRIC ENGINE</div>
-              </motion.div>
-
-              {/* Top-right status */}
-              <motion.div
-                initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.5, duration: 0.5 }}
-                className="absolute top-3 right-4 text-right space-y-1"
-              >
-                <div className="text-[9px] tracking-[0.2em] uppercase">
-                  {verified
-                    ? <span className="text-emerald-400">● IDENTITY VERIFIED</span>
-                    : <span className="text-indigo-400/70 animate-pulse">◌ SCANNING</span>
-                  }
+                {/* Section header */}
+                <div className="text-[8px] text-slate-700 tracking-[0.25em] uppercase mb-3 flex items-center gap-2">
+                  <div className="w-3 h-px bg-indigo-500/40" />
+                  BIOMETRIC CHECKS
                 </div>
-                <div className="text-[9px] text-slate-600 tracking-widest">FACE_ID · {Math.round(progress)}%</div>
-              </motion.div>
 
-              {/* Left side data readout */}
-              <motion.div
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                transition={{ delay: 0.8, duration: 0.6 }}
-                className="absolute left-2 top-1/2 -translate-y-1/2 space-y-2"
-              >
-                {['DEPTH', 'MESH', 'LIVENESS', 'ENCRYPT'].map((label, i) => (
-                  <div key={label} className="flex items-center gap-1.5">
-                    <div className={`w-1 h-1 rounded-full ${progress > (i + 1) * 18 ? 'bg-emerald-400' : 'bg-indigo-500/40'}`} />
-                    <span className={`text-[8px] tracking-widest ${progress > (i + 1) * 18 ? 'text-slate-500' : 'text-slate-700'}`}>{label}</span>
-                  </div>
-                ))}
-              </motion.div>
-
-              {/* Right side metrics */}
-              <motion.div
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                transition={{ delay: 0.9, duration: 0.6 }}
-                className="absolute right-2 top-1/2 -translate-y-1/2 space-y-2 text-right"
-              >
                 {[
-                  { label: 'CONF', value: verified ? '99.8%' : `${Math.min(99, Math.round(progress * 1.4))}%` },
-                  { label: 'LATENCY', value: '12ms' },
-                  { label: 'NODES', value: '468' },
-                  { label: 'SECURE', value: 'AES-256' },
-                ].map(({ label, value }) => (
-                  <div key={label} className="space-y-0.5">
-                    <div className="text-[8px] text-slate-700 tracking-widest">{label}</div>
-                    <div className="text-[9px] text-indigo-400/70">{value}</div>
+                  { label: 'DEPTH MAP', threshold: 14 },
+                  { label: 'MESH BUILD', threshold: 28 },
+                  { label: 'LANDMARKS', threshold: 44 },
+                  { label: 'LIVENESS', threshold: 58 },
+                  { label: 'ANTI-SPOOF', threshold: 63 },
+                  { label: 'ENCRYPT', threshold: 70 },
+                  { label: 'CLOUD SYNC', threshold: 82 },
+                  { label: 'LEDGER WRITE', threshold: 93 },
+                ].map(({ label, threshold }, i) => {
+                  const done = progress > threshold;
+                  const active = progress > threshold - 14 && !done;
+                  return (
+                    <motion.div
+                      key={label}
+                      initial={{ opacity: 0, x: -8 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.5 + i * 0.06 }}
+                      className="flex items-center gap-2 py-1.5 border-b border-white/[0.03]"
+                    >
+                      <div className={`w-3.5 h-3.5 rounded flex items-center justify-center flex-shrink-0 transition-all duration-500 ${done ? 'bg-emerald-500/20 border border-emerald-500/50' :
+                          active ? 'bg-indigo-500/15 border border-indigo-500/40' :
+                            'bg-white/[0.02] border border-white/[0.06]'
+                        }`}>
+                        {done
+                          ? <svg viewBox="0 0 10 10" className="w-2 h-2"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="#34d399" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                          : active
+                            ? <motion.div animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 0.8, repeat: Infinity }} className="w-1 h-1 rounded-full bg-indigo-400" />
+                            : null
+                        }
+                      </div>
+                      <span className={`text-[8px] tracking-[0.12em] transition-colors duration-500 ${done ? 'text-slate-400' : active ? 'text-indigo-400/70' : 'text-slate-700'}`}>
+                        {label}
+                      </span>
+                      {done && <div className="ml-auto w-1 h-1 rounded-full bg-emerald-500/60" />}
+                    </motion.div>
+                  );
+                })}
+
+                {/* Divider */}
+                <div className="h-px bg-white/[0.04] my-3" />
+
+                {/* Live metrics */}
+                <div className="text-[8px] text-slate-700 tracking-[0.25em] uppercase mb-2 flex items-center gap-2">
+                  <div className="w-3 h-px bg-indigo-500/40" />
+                  LIVE METRICS
+                </div>
+                {[
+                  { k: 'CONFIDENCE', v: `${conf}%`, hi: verified },
+                  { k: 'NODES', v: `${nodes}`, hi: false },
+                  { k: 'LATENCY', v: `${lat}ms`, hi: false },
+                  { k: 'MATCH SCORE', v: verified ? '0.998' : '—', hi: verified },
+                ].map(({ k, v, hi }) => (
+                  <div key={k} className="flex justify-between items-baseline py-1 border-b border-white/[0.03]">
+                    <span className="text-[7.5px] text-slate-700 tracking-widest">{k}</span>
+                    <span className={`text-[9px] tabular-nums ${hi ? 'text-emerald-400' : 'text-indigo-400/70'}`}>{v}</span>
                   </div>
                 ))}
               </motion.div>
 
-              {/* Bottom scan line indicator */}
+              {/* ── Canvas ── */}
+              <div className="relative flex-1 flex items-center justify-center">
+                <canvas
+                  ref={canvasRef}
+                  className="w-[280px] h-[280px] sm:w-[360px] sm:h-[360px] md:w-[400px] md:h-[400px] lg:w-[440px] lg:h-[440px]"
+                  style={{ display: 'block' }}
+                />
+
+                {/* Canvas HUD overlays */}
+                <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+                  <div className="relative w-[280px] h-[280px] sm:w-[360px] sm:h-[360px] md:w-[400px] md:h-[400px] lg:w-[440px] lg:h-[440px]"
+                    style={{ fontFamily: "'Space Mono','Courier New',monospace" }}>
+
+                    {/* Top-left */}
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
+                      className="absolute top-1 left-2 space-y-0.5">
+                      <div className="text-[7px] text-indigo-400/40 tracking-[0.2em] uppercase">FACE_ID · SCAN</div>
+                      <div className="text-[7px] text-slate-700 tracking-widest">{Math.round(progress).toString().padStart(3, '0')}% COMPLETE</div>
+                    </motion.div>
+
+                    {/* Top-right */}
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.55 }}
+                      className="absolute top-1 right-2 text-right space-y-0.5">
+                      <div className={`text-[7px] tracking-[0.18em] uppercase ${verified ? 'text-emerald-400' : 'text-indigo-400/50 animate-pulse'}`}>
+                        {verified ? '● MATCH FOUND' : '◌ PROCESSING'}
+                      </div>
+                      <div className="text-[7px] text-slate-700 tracking-widest">CONF {conf}%</div>
+                    </motion.div>
+
+                    {/* Bottom center */}
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.65 }}
+                      className="absolute bottom-1 left-1/2 -translate-x-1/2 flex items-center gap-2">
+                      <div className="w-8 h-px bg-indigo-500/20" />
+                      <span className="text-[6.5px] text-slate-700 tracking-[0.22em] uppercase whitespace-nowrap">
+                        {verified ? 'Attendance Logged · Session Active' : 'Biometric Analysis In Progress'}
+                      </span>
+                      <div className="w-8 h-px bg-indigo-500/20" />
+                    </motion.div>
+                  </div>
+                </div>
+              </div>
+
+              {/* ── Right panel ── */}
               <motion.div
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                transition={{ delay: 0.6 }}
-                className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-3"
+                initial={{ opacity: 0, x: 28 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.45, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+                className="hidden md:flex flex-col gap-0 w-44 flex-shrink-0"
+                style={{ fontFamily: "'Space Mono','Courier New',monospace" }}
               >
-                <div className="w-16 h-px bg-indigo-500/20" />
-                <span className="text-[8px] text-slate-700 tracking-[0.25em] uppercase">
-                  {verified ? 'Attendance Logged' : 'Analysing…'}
-                </span>
-                <div className="w-16 h-px bg-indigo-500/20" />
+                {/* Confidence ring */}
+                <div className="text-[8px] text-slate-700 tracking-[0.25em] uppercase mb-3 flex items-center gap-2">
+                  <div className="w-3 h-px bg-indigo-500/40" />
+                  CONFIDENCE
+                </div>
+                <div className="flex justify-center mb-4">
+                  <div className="relative w-20 h-20">
+                    <svg viewBox="0 0 80 80" className="w-full h-full -rotate-90">
+                      <circle cx="40" cy="40" r="32" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="4" />
+                      <circle cx="40" cy="40" r="32" fill="none"
+                        stroke={verified ? '#34d399' : '#6366f1'}
+                        strokeWidth="4" strokeLinecap="round"
+                        strokeDasharray={`${2 * Math.PI * 32}`}
+                        strokeDashoffset={`${2 * Math.PI * 32 * (1 - c01(progress / 100))}`}
+                        style={{ transition: 'stroke-dashoffset 0.08s linear, stroke 0.7s' }}
+                      />
+                      {/* Inner ring */}
+                      <circle cx="40" cy="40" r="24" fill="none" stroke="rgba(99,102,241,0.08)" strokeWidth="1" />
+                    </svg>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <span className={`text-sm font-bold tabular-nums ${verified ? 'text-emerald-400' : 'text-indigo-400'}`}>{conf}%</span>
+                      <span className="text-[6px] text-slate-700 tracking-widest mt-0.5">CONF</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Signal waveform */}
+                <div className="text-[8px] text-slate-700 tracking-[0.25em] uppercase mb-2 flex items-center gap-2">
+                  <div className="w-3 h-px bg-indigo-500/40" />
+                  SIGNAL
+                </div>
+                <div className="flex items-end gap-0.5 h-10 mb-4">
+                  {Array.from({ length: 20 }).map((_, i) => {
+                    const active = progress > i * 5;
+                    const h = [35, 55, 28, 72, 45, 88, 38, 65, 50, 80, 42, 70, 32, 60, 48, 85, 40, 68, 55, 78][i];
+                    return (
+                      <div key={i} className="flex-1 rounded-sm transition-all duration-500"
+                        style={{
+                          height: `${active ? h : 8}%`,
+                          background: active
+                            ? `rgba(${i % 3 === 0 ? '99,102,241' : i % 3 === 1 ? '124,58,237' : '129,140,248'},${active ? 0.75 : 0.15})`
+                            : 'rgba(255,255,255,0.04)',
+                        }}
+                      />
+                    );
+                  })}
+                </div>
+
+                {/* Session info */}
+                <div className="text-[8px] text-slate-700 tracking-[0.25em] uppercase mb-2 flex items-center gap-2">
+                  <div className="w-3 h-px bg-indigo-500/40" />
+                  SESSION
+                </div>
+                {[
+                  { k: 'PROTOCOL', v: 'TLS 1.3' },
+                  { k: 'CIPHER', v: 'AES-256' },
+                  { k: 'REGION', v: 'IN-WEST' },
+                  { k: 'SESSION', v: 'LIVE' },
+                  { k: 'STATUS', v: verified ? 'PASS ✓' : 'PROC…', hi: verified },
+                ].map(({ k, v, hi }) => (
+                  <div key={k} className="flex justify-between items-baseline py-1 border-b border-white/[0.03]">
+                    <span className="text-[7.5px] text-slate-700 tracking-widest">{k}</span>
+                    <span className={`text-[9px] ${hi ? 'text-emerald-400' : 'text-indigo-400/70'}`}>{v}</span>
+                  </div>
+                ))}
               </motion.div>
             </div>
           </div>
 
-          {/* ── Status label + progress ── */}
+          {/* ══════════════════════════════════════════
+              BOTTOM BAR
+          ══════════════════════════════════════════ */}
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.35, duration: 0.7 }}
-            className="mt-3 w-full max-w-[360px] px-4 z-20"
+            transition={{ delay: 0.25, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            className="absolute bottom-0 left-0 right-0 z-30 border-t border-white/[0.05]"
+            style={{ background: 'rgba(1,3,11,0.7)', backdropFilter: 'blur(16px)' }}
           >
-            {/* Phase label */}
-            <div className="flex items-center justify-between mb-2.5">
-              <AnimatePresence mode="wait">
-                <motion.span
-                  key={phaseIdx}
-                  initial={{ opacity: 0, y: 4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -4 }}
-                  transition={{ duration: 0.25 }}
-                  className={`text-xs font-medium tracking-wide ${verified ? 'text-emerald-400' : 'text-slate-400'}`}
-                >
-                  {phase.label}
-                </motion.span>
-              </AnimatePresence>
-              <span className="text-[10px] font-mono text-slate-600">{Math.round(progress)}%</span>
-            </div>
+            <div className="max-w-2xl mx-auto px-5 sm:px-8 py-4">
+              {/* Phase row */}
+              <div className="flex items-start justify-between mb-3 gap-4">
+                <div className="flex-1 min-w-0">
+                  <AnimatePresence mode="wait">
+                    <motion.div key={phaseIdx}
+                      initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <div className={`text-xs font-semibold tracking-wide truncate ${verified ? 'text-emerald-400' : 'text-white'}`}>
+                        {phase.label}
+                      </div>
+                      <div className="text-[9px] text-slate-600 mt-0.5 tracking-wide truncate"
+                        style={{ fontFamily: "'Space Mono','Courier New',monospace" }}>
+                        {phase.sub}
+                      </div>
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+                <div className="flex-shrink-0 text-right" style={{ fontFamily: "'Space Mono','Courier New',monospace" }}>
+                  <div className={`text-sm font-bold tabular-nums ${verified ? 'text-emerald-400' : 'text-indigo-400'}`}>
+                    {Math.round(progress).toString().padStart(3, '0')}
+                    <span className="text-[10px] text-slate-600">%</span>
+                  </div>
+                </div>
+              </div>
 
-            {/* Progress bar — segmented */}
-            <div className="relative w-full h-[3px] bg-white/[0.05] rounded-full overflow-hidden">
-              <motion.div
-                className={`h-full rounded-full transition-colors duration-700 ${verified
-                  ? 'bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-400'
-                  : 'bg-gradient-to-r from-indigo-600 via-violet-500 to-purple-500'
-                }`}
-                style={{ width: `${progress}%` }}
-              />
-              {/* Shimmer */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-[shimmer_1.8s_infinite]" />
-            </div>
-
-            {/* Step dots */}
-            <div className="flex justify-between mt-2.5 px-0.5">
-              {PHASES.map((p, i) => (
-                <div
-                  key={i}
-                  className={`w-1 h-1 rounded-full transition-all duration-500 ${
-                    progress >= p.pct * 100
-                      ? i >= 4 ? 'bg-emerald-400 scale-125' : 'bg-indigo-400'
-                      : 'bg-white/10'
-                  }`}
+              {/* Progress track */}
+              <div className="relative h-[2px] rounded-full overflow-hidden mb-2.5"
+                style={{ background: 'rgba(255,255,255,0.05)' }}>
+                <motion.div
+                  className="h-full rounded-full"
+                  style={{
+                    width: `${progress}%`,
+                    background: verified
+                      ? 'linear-gradient(90deg,#059669,#34d399,#6ee7b7)'
+                      : 'linear-gradient(90deg,#4338ca,#6366f1,#818cf8,#a78bfa)',
+                    transition: 'width 0.06s linear, background 0.8s',
+                    boxShadow: verified ? '0 0 8px rgba(52,211,153,0.5)' : '0 0 8px rgba(99,102,241,0.5)',
+                  }}
                 />
-              ))}
+                {/* Shimmer */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.10] to-transparent animate-[shimmer_2.2s_infinite]" />
+              </div>
+
+              {/* Phase dots + labels */}
+              <div className="flex justify-between">
+                {SEQ.map((s, i) => {
+                  const done = progress >= s.t * 100;
+                  const active = phaseIdx === i;
+                  return (
+                    <div key={i} className="flex flex-col items-center gap-1">
+                      <div className={`rounded-full transition-all duration-500 ${done && i >= 4
+                          ? 'w-2 h-2 bg-emerald-400' + (active ? ' shadow-[0_0_8px_rgba(52,211,153,0.9)]' : '')
+                          : done
+                            ? 'w-1.5 h-1.5 bg-indigo-400'
+                            : active
+                              ? 'w-1.5 h-1.5 bg-indigo-400/50 animate-pulse'
+                              : 'w-1 h-1 bg-white/[0.08]'
+                        }`} />
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </motion.div>
 
-          {/* ── Ambient floating dots ── */}
-          {Array.from({ length: 14 }).map((_, i) => (
-            <motion.div
-              key={i}
+          {/* ── Ambient particles ── */}
+          {Array.from({ length: 18 }).map((_, i) => (
+            <motion.div key={i}
               className="absolute rounded-full pointer-events-none"
               style={{
-                width:  i % 3 === 0 ? 2 : 1,
-                height: i % 3 === 0 ? 2 : 1,
-                left: `${6 + (i * 6.8) % 88}%`,
-                top:  `${8 + (i * 5.9) % 84}%`,
-                background: i % 2 === 0 ? 'rgba(129,140,248,0.3)' : 'rgba(167,139,250,0.25)',
+                width: i % 5 === 0 ? 2 : 1, height: i % 5 === 0 ? 2 : 1,
+                left: `${4 + (i * 5.8) % 92}%`, top: `${6 + (i * 6.1) % 88}%`,
+                background: ['rgba(99,102,241,0.35)', 'rgba(167,139,250,0.28)', 'rgba(56,189,248,0.22)'][i % 3],
               }}
-              animate={{ y: [0, -14, 0], opacity: [0.1, 0.45, 0.1] }}
-              transition={{ duration: 3.5 + (i % 5) * 0.7, delay: i * 0.22, repeat: Infinity, ease: 'easeInOut' }}
+              animate={{ y: [0, -18, 0], opacity: [0.06, 0.45, 0.06] }}
+              transition={{ duration: 3 + (i % 7) * 0.5, delay: i * 0.15, repeat: Infinity, ease: 'easeInOut' }}
             />
           ))}
+
         </motion.div>
       )}
     </AnimatePresence>

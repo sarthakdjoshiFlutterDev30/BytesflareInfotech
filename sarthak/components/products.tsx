@@ -4,12 +4,12 @@ import { motion } from 'framer-motion';
 import { ArrowRight, QrCode, Shield, BarChart3, Users, Smartphone, Bell, Star, ExternalLink } from 'lucide-react';
 
 const features = [
-  { icon: QrCode,     label: 'QR-based smart attendance' },
-  { icon: Shield,     label: 'Secure face verification (anti-spoofing ready)' },
-  { icon: BarChart3,  label: 'Real-time dashboard and analytics' },
-  { icon: Users,      label: 'Role-based access control' },
+  { icon: QrCode, label: 'QR-based smart attendance' },
+  { icon: Shield, label: 'Secure face verification (anti-spoofing ready)' },
+  { icon: BarChart3, label: 'Real-time dashboard and analytics' },
+  { icon: Users, label: 'Role-based access control' },
   { icon: Smartphone, label: 'Cross-platform (Web & Mobile)' },
-  { icon: Bell,       label: 'Instant notifications' },
+  { icon: Bell, label: 'Instant notifications' },
 ];
 
 export function Products() {
@@ -101,7 +101,7 @@ export function Products() {
               <motion.button
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.97 }}
-                onClick={() => window.open('https://www.bytesattend.com', '_blank')}
+                onClick={() => window.location.href = '/bytesattend'}
                 className="group inline-flex items-center gap-2 px-7 py-3.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 transition-colors duration-300 shadow-[0_0_25px_rgba(99,102,241,0.3)] hover:shadow-[0_0_40px_rgba(99,102,241,0.5)]"
               >
                 View Details
